@@ -6,9 +6,7 @@
           view.padding
             view {{item.name}}
             view {{item.address}}
-          view.text-orange(v-if="item.distance") {{item.distance}}km
-
-    
+          view.text-orange(v-if="item.distance") {{item.distance}}km    
 </template>
 
 <script>

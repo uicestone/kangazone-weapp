@@ -16,7 +16,7 @@
           text 所有预约
           text.icon-right
       view.cu-list.menu.card-menu.margin-top.shadow
-        view.cu-item(@click="goBooking")
+        navigator(url="/pages/booking/index").cu-item
           view.cu-avatar.round.lg.booking-icon
             img(:src="require('../../static/booking.png')")
           view.content.margin-sm
@@ -45,13 +45,13 @@ export default {
           icon: "baby",
           color: "mauve",
           title: "会员卡",
-          to: "/pages/child/index"
+          to: "/pages/membership/index"
         },
         {
           icon: "redpacket",
           color: "red",
           title: "优惠券",
-          to: "/pages/user/detail"
+          to: "/pages/coupons/index"
         },
         {
           icon: "profilefill",
@@ -103,6 +103,11 @@ export default {
     selcectStore() {
       uni.navigateTo({
         url: "/pages/store/list"
+      });
+    },
+    navigateTo(url) {
+      uni.navigateTo({
+        url
       });
     }
   }

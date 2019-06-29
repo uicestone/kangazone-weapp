@@ -31,7 +31,7 @@ http.delete('user/1').then((res)=>{
 */
 export default {
   config: {
-    baseUrl: "https://ls-coupon.codeispoetry.tech/wp-json/v1",
+    baseUrl: "https://kanga.uice.lu/api/",
     header: {
       "Content-Type": "application/json;charset=UTF-8"
       // "Content-Type": "application/x-www-form-urlencoded"

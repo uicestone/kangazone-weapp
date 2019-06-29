@@ -4,7 +4,8 @@ const state = {
   currentStore: {
     id: uni.getStorageSync("storeId"),
     name: "",
-    distance: 0
+    distance: 0,
+    phone: null
   },
   nearStores: [
     { name: "测试3", adderss: "测试1", distance: "1" },
