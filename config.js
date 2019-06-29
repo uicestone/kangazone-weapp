@@ -1,3 +1,7 @@
+const isProd = false || process.env === "production";
+
 export const config = {
-  mapKey: "HRHBZ-MQ6E3-OS63P-3TG2N-DE5LO-OUFXH"
+  API_ENDPOINT: isProd
+    ? "https://kanga.uice.lu/api"
+    : "http://localhost:8080/api"
 };

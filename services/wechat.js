@@ -14,12 +14,13 @@ export const wechatLogin = () =>
           success: async userData => {
             // console.log(userData);
             try {
-              const res = await api.wechatLogin({ code: loginRes.code });
-              let { userInfo } = userData;
-              userInfo = Object.assign({}, userInfo, res.data);
-              console.log(userInfo);
-              stroreUser({ user: userInfo });
-              resolve(userInfo);
+              const res = await api.wechatLogin({
+                code: loginRes.code,
+                encryptedData: userData.encryptedData,
+                iv: userData.iv
+              });
+              stroreUser({ user: res.data });
+              resolve(res);
             } catch (err) {
               uni.showToast({
                 title: "登录失败",

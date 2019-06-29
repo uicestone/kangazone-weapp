@@ -37,6 +37,7 @@
 
 <script>
 import { sync } from "vuex-pathify";
+import { wechatLogin } from "../../services";
 export default {
   data() {
     return {
@@ -77,10 +78,20 @@ export default {
     nearStores: sync("store/nearStores")
   },
   onLoad() {
+    this.checkLogin();
     this.checkLocation();
   },
   methods: {
     loadInitData() {},
+    async checkLogin() {
+      try {
+        const user = await wechatLogin();
+        console.log(user);
+      } catch (error) {
+        console.error(error);
+        this.goLogin();
+      }
+    },
     async checkLocation() {
       console.log("checkLocation");
       uni.getLocation({
@@ -108,6 +119,11 @@ export default {
     navigateTo(url) {
       uni.navigateTo({
         url
+      });
+    },
+    goLogin() {
+      uni.navigateTo({
+        url: "/pages/login"
       });
     }
   }

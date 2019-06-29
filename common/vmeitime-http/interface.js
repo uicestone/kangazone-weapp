@@ -29,9 +29,12 @@ http.delete('user/1').then((res)=>{
 }) 
 
 */
+
+import { config } from "../../config";
+
 export default {
   config: {
-    baseUrl: "https://kanga.uice.lu/api/",
+    baseUrl: config.API_ENDPOINT,
     header: {
       "Content-Type": "application/json;charset=UTF-8"
       // "Content-Type": "application/x-www-form-urlencoded"

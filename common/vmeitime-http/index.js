@@ -26,6 +26,13 @@ export const test = data => {
   });
 };
 
+http.interceptor.request = config => {
+  config.header = {
+    Authorization: "TEST"
+  };
+  return config;
+};
+
 http.interceptor.response = response => {
   console.log("response:", response);
   //判断返回状态 执行相应操作
@@ -48,54 +55,15 @@ export const banner = data => {
   });
 };
 
-export const wechatLogin = ({ code }) => {
+export const wechatLogin = ({ code, encryptedData, iv }) => {
   return http.request({
-    url: `/wx/auth/code-to-session?code=${code}`,
-    method: "GET"
-  });
-};
-
-export const getNearShop = ({ latitude, longitude }) => {
-  return http.request({
-    url: `/ls-coupon/shop?near=${latitude},${longitude}`,
-    method: "GET"
-  });
-};
-
-export const getCoupons = ({ openid }) => {
-  return http.request({
-    url: `/ls-coupon/code?openid=${openid}`,
-    method: "GET"
-  });
-};
-
-export const claimCoupons = ({ couponIds, openid, customerNickname }) => {
-  return http.request({
-    url: `/ls-coupon/code`,
+    url: `/wechat/login`,
     method: "POST",
     dataType: "json",
     data: {
-      customerNickname,
-      couponIds,
-      openid
+      code,
+      encryptedData,
+      iv
     }
   });
-};
-
-export const checkCoupons = ({ codeString, openid }) => {
-  return http.request({
-    url: `/ls-coupon/code`,
-    method: "PUT",
-    dataType: "json",
-    data: {
-      codeString,
-      openid
-    }
-  });
-};
-
-// 默认全部导出  import api from '@/common/vmeitime-http/'
-export default {
-  test,
-  banner
 };
