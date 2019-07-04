@@ -67,3 +67,16 @@ export const wechatLogin = ({ code, encryptedData, iv }) => {
     }
   });
 };
+
+export const wechatDecrypt = ({ session_key, encryptedData, iv }) => {
+  return http.request({
+    url: `/wechat/decrypt`,
+    method: "POST",
+    dataType: "json",
+    data: {
+      session_key,
+      encryptedData,
+      iv
+    }
+  });
+};

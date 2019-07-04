@@ -2,7 +2,7 @@
   view
     scroll-view.page(:scroll-y="true")
       view.flex.justify-center.margin-top-xl
-        view.cu-avatar.round.xl
+        view.cu-avatar.round.xl(v-if="form.avatarUrl" :style="[{ backgroundImage:'url(' + form.avatarUrl + ')' }]")
       view.margin
         view.cu-form-group.no-bg
           view.title 姓名
@@ -10,12 +10,12 @@
 				
         view.cu-form-group.no-bg
           view.title 性別
-          view.text-bold.text-right {{ form.sex }}
+          view.text-bold.text-right {{ form.gender == "1" ? "男": "女" }}
 
         view.cu-form-group.no-bg
           view.title 手机号
-          text.text-bold.text-right(v-if="user.customer.mobile") {{user.customer.mobile}}
-          button.text-right.cu-btn.bg-blue(v-if="!user.customer.mobile" open-type='getPhoneNumber' @getphonenumber="getPhoneNumber") 获取手机号
+          text.text-bold.text-right(v-if="user.mobile") {{user.mobile}}
+          button.text-right.cu-btn.bg-blue(v-if="!user.mobile" open-type='getPhoneNumber' @getphonenumber="getPhoneNumber") 获取手机号
         //- button.cu-btn.block.bg-blue.margin-xl.lg(:disabled="loading" @click="updateUserProfile")
         //-   text.icon-loading2.iconfont-spin(v-if="loading")
         //-   text 更新
@@ -24,41 +24,37 @@
 
 <script>
 import { sync, get } from "vuex-pathify";
+import { wechatDecrypt } from "../../common/vmeitime-http";
 
 export default {
   data() {
     return {
       form: {
-        sex: null,
+        gender: null,
         birthday: null,
-        avatar: null
-      },
-      sex: {
-        male: {
-          label: "男",
-          value: "男"
-        },
-        female: {
-          label: "女",
-          value: "女"
-        }
+        avatarUrl: null
       },
       providerList: [],
       hasProvider: false
     };
   },
   computed: {
-    user: sync("auth/user")
+    user: sync("auth/user"),
+    auth: sync("auth")
   },
   methods: {
     async getPhoneNumber(res) {
-      const { sex, birthday } = this.form;
       const { iv, encryptedData } = res.detail;
+      const { session_key } = this.auth;
       uni.showLoading();
 
-      // const user = await update_mobile({ iv, encryptedData });
-      this.user = user;
-      await this.updateUserProfile();
+      console.log(res);
+      console.log(session_key, encryptedData, iv);
+
+      const data = await wechatDecrypt({ iv, encryptedData, session_key });
+      console.log(data);
+      // this.user = user;
+      // await this.updateUserProfile();
       uni.hideLoading();
     },
     async updateUserProfile() {
@@ -68,7 +64,7 @@ export default {
           title: "请先获取手机号"
         });
       }
-      const { sex, birthday } = this.form;
+      const { gender, birthday } = this.form;
 
       if (data) {
         uni.redirectTo({
@@ -76,8 +72,8 @@ export default {
         });
       }
     },
-    switchSex(e) {
-      this.form.sex = e.detail.value;
+    switchgender(e) {
+      this.form.gender = e.detail.value;
     }
   },
   onReady() {
