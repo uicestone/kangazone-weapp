@@ -24,7 +24,7 @@
 
 <script>
 import { sync, get } from "vuex-pathify";
-import { wechatDecrypt } from "../../common/vmeitime-http";
+import { wechatDecrypt, updateUser } from "../../common/vmeitime-http";
 
 export default {
   data() {
@@ -51,24 +51,17 @@ export default {
       console.log(res);
       console.log(session_key, encryptedData, iv);
 
-      const data = await wechatDecrypt({ iv, encryptedData, session_key });
-      console.log(data);
-      // this.user = user;
-      // await this.updateUserProfile();
+      const response = await wechatDecrypt({ iv, encryptedData, session_key });
+      const { phoneNumber } = response.data;
+      await this.updateUserProfile({ mobile: phoneNumber });
       uni.hideLoading();
     },
-    async updateUserProfile() {
-      if (!this.user.customer.mobile) {
-        return uni.showToast({
-          icon: "none",
-          title: "请先获取手机号"
-        });
-      }
-      const { gender, birthday } = this.form;
-
-      if (data) {
+    async updateUserProfile({ mobile }) {
+      const userId = this.user.id;
+      const req = await updateUser({ userId, data: { mobile, userId } });
+      if (req) {
         uni.redirectTo({
-          url: "/pages/main/main"
+          url: "/pages/index/index"
         });
       }
     },

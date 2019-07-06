@@ -19,7 +19,7 @@ export const wechatLogin = () =>
                 encryptedData: userData.encryptedData,
                 iv: userData.iv
               });
-              stroreUser({ user: res.data });
+              stroreUser(res.data);
               resolve(res);
             } catch (err) {
               uni.showToast({
@@ -43,9 +43,12 @@ export const wechatLogin = () =>
     });
   });
 
-export const stroreUser = ({ user } = {}) => {
+export const stroreUser = ({ user, session_key } = {}) => {
   try {
     store.state.auth.user = user;
+    store.state.auth.token = user.token;
+    store.state.auth.session_key = session_key;
+    store.state.auth.showLogin = false;
   } catch (e) {
     console.error(e);
   }

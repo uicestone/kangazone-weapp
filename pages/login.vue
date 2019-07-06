@@ -1,20 +1,25 @@
 <template lang="pug">
-  view.page.flex.align-end
-    button.margin.flex-sub(type='primary', open-type='getUserInfo', @getuserinfo='wechatLogin', withcredentials='true') 微信登录
+  view.cu-modal(:class="[auth.showLogin ? 'show':'']")
+    view.cu-dialog.no-bg
+      view.cu-bar
+        button.flex-sub(type='primary', open-type='getUserInfo', @getuserinfo='wechatLogin', withcredentials='true') 微信登录
  
 </template>
 
 <script>
 import { wechatLogin } from "../services";
+import { sync } from "vuex-pathify";
 
 export default {
+  computed: {
+    currentTab: sync("currentTab"),
+    auth: sync("auth")
+  },
   methods: {
     async wechatLogin() {
       try {
         const res = await wechatLogin();
-        uni.navigateTo({
-          url: "/pages/store/list"
-        });
+        console.log(res);
       } catch (err) {
         console.log(err);
       }
@@ -24,8 +29,6 @@ export default {
 </script>
 
 <style lang="stylus">
-.page
-  background white
-  height 100vh
-  widows 100vw
+.no-bg
+  background transparent
 </style>

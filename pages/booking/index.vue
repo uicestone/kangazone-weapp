@@ -23,10 +23,10 @@
         form.cu-item.shadow.padding
           view.cu-form-group
             view.title 人数
-            input(placeholder="1").text-right
+            input(v-model="form.membersCount" placeholder="1" type="number").text-right
           view.cu-form-group
             view.title 袜子数
-            input(placeholder="1").text-right
+            input(v-model="form.socksCount" placeholder="1"  type="number").text-right
 
     view.cu-bar.bg-white.tabbar.border.shop.payment-container
       view.flex.justify-start.align-end.text-gray(style="flex:5;padding-left:20upx;font-size:25upx")
@@ -45,7 +45,10 @@ import { sync } from "vuex-pathify";
 export default {
   data() {
     return {
-      form: {}
+      form: {
+        membersCount: 1,
+        socksCount: 1
+      }
     };
   },
   computed: {

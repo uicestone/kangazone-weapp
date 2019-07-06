@@ -1,5 +1,6 @@
 <template lang="pug">
   view
+    login
     scroll-view.page(:scroll-y="true")
       view.flex.justify-between.padding.align-center(@click="selcectStore")
         view
@@ -38,7 +39,11 @@
 <script>
 import { sync } from "vuex-pathify";
 import { wechatLogin } from "../../services";
+import login from "../login";
 export default {
+  components: {
+    login
+  },
   data() {
     return {
       menus1: [
@@ -75,11 +80,16 @@ export default {
   },
   computed: {
     currentStore: sync("store/currentStore"),
-    nearStores: sync("store/nearStores")
+    nearStores: sync("store/nearStores"),
+    auth: sync("auth")
   },
-  onLoad() {
+  watch: {
+    "auth.user"() {
+      this.checkLocation();
+    }
+  },
+  async onLoad() {
     this.checkLogin();
-    this.checkLocation();
   },
   methods: {
     loadInitData() {},
@@ -89,7 +99,7 @@ export default {
         console.log(user);
       } catch (error) {
         console.error(error);
-        this.goLogin();
+        this.auth.showLogin = true;
       }
     },
     async checkLocation() {

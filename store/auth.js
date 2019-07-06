@@ -2,6 +2,7 @@ import { make } from "vuex-pathify";
 import config from "../config";
 
 const state = {
+  showLogin: false,
   token: uni.getStorageSync("token") || "",
   session_key: "",
   user: {

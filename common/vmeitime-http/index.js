@@ -1,5 +1,6 @@
 import http from "./interface";
 import _ from "lodash";
+import store from "../../store";
 
 /**
  * 将业务所有接口统一起来便于维护
@@ -27,9 +28,13 @@ export const test = data => {
 };
 
 http.interceptor.request = config => {
-  config.header = {
-    Authorization: "TEST"
-  };
+  const token = _.get(store, "state.auth.token");
+  if (token) {
+    config.header = {
+      Authorization: token
+    };
+  }
+
   return config;
 };
 
@@ -78,5 +83,14 @@ export const wechatDecrypt = ({ session_key, encryptedData, iv }) => {
       encryptedData,
       iv
     }
+  });
+};
+
+export const updateUser = ({ userId, data }) => {
+  return http.request({
+    url: `/user/${userId}`,
+    method: "PUT",
+    dataType: "json",
+    data
   });
 };
