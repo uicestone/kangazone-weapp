@@ -94,3 +94,20 @@ export const updateUser = ({ userId, data }) => {
     data
   });
 };
+
+export const getStores = () => {
+  return http.request({
+    url: `/store`,
+    method: "GET"
+  });
+};
+
+export const createBooking = ({ store, type, date, hours, checkInAt, membersCount, socksCount }) => {
+  const data = _.omitBy({ store, type, date, hours, checkInAt, membersCount, socksCount }, !_.isNil);
+  return http.request({
+    url: `/booking`,
+    method: "POST",
+    dataType: "json",
+    data
+  });
+};

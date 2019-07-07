@@ -1,7 +1,7 @@
 <template lang="pug">
   view
-    view.page
-      view.cu-card
+    view.page.padding
+      view.cu-row.bg-white.radius
         view.cu-item.shadow.padding
           view.flex.justify-between
             view.margin-left-sm
@@ -19,14 +19,36 @@
               view.text-gray.text-sm 距您{{currentStore.distance}} km
             button.cu-btn.icon.bg-green(@click="phoneCall(currentStore.phone)")
               text.cuIcon-phone
-      view.cu-card
-        form.cu-item.shadow.padding
+      
+      view.cu-row.bg-white.nav.text-center.flex.radius.margin-tb
+        view.cu-item.flex-sub.text-lg(:class="[form.bookingType == item.value? 'bg-blue': '' ]" v-for="(item,index) in bookingTypes" :key="index" @click="selectBookingType(item)") {{item.label}}
+
+      view.cu-row.margin-tb.radius
+        form.cu-item.shadow
+          view.cu-form-group(@click="showCalendar = true")
+            view.title 日期
+            view.text-right {{form.bookingDate}}
           view.cu-form-group
             view.title 人数
-            input(v-model="form.membersCount" placeholder="1" type="number").text-right
+            input.text-right(v-model="form.membersCount" placeholder="1" type="number")
           view.cu-form-group
             view.title 袜子数
-            input(v-model="form.socksCount" placeholder="1"  type="number").text-right
+            input.text-right(v-model="form.socksCount" placeholder="1"  type="number")
+      EiCalendar(:visible.sync="showCalendar" format="YYYY-MM-DD" v-model="form.bookingDate" )
+
+      view(v-if="form.bookingType == 'play'")
+        view.cu-row.bg-white.nav.text-center.flex.radius
+          view.cu-item.flex-sub.text-lg(:class="[form.bookingSlot == item? 'bg-blue': '' ]" v-for="(item,index) in bookingSlots" :key="index" @click="selectBookingSlot(item)") {{item}}
+        view.cu-row.bg-white.nav.text-center.flex.radius
+          view.cu-item.flex-sub.text-lg(:class="[form.bookingHours == item? 'bg-blue': '' ]" v-for="(item,index) in bookingHours" :key="index" @click="selectBookingHour(item)") {{item}}小时
+      view(v-if="form.bookingType == 'party'")
+        view.cu-form-group.disabled
+          view.title 开始时间
+          picker(:value="form.bookingCheckinTime" :range="avaliableTimes" @change="updateBookingCheckinTime")
+            view.picker {{form.bookingCheckinTime}}
+        view.cu-row.bg-white.nav.text-center.flex.radius
+          view.cu-item.flex-sub.text-lg(:class="[form.bookingHours == item? 'bg-blue': '' ]" v-for="(item,index) in bookingHours" :key="index" @click="selectBookingHour(item)") {{item}}小时
+
 
     view.cu-bar.bg-white.tabbar.border.shop.payment-container
       view.flex.justify-start.align-end.text-gray(style="flex:5;padding-left:20upx;font-size:25upx")
@@ -41,11 +63,28 @@
 
 <script>
 import { sync } from "vuex-pathify";
+import EiCalendar from "../../components/ei-calendar/ei-calendar.vue";
+import moment from "moment";
+import _ from "lodash";
+import { createBooking } from "../../common/vmeitime-http";
 
 export default {
+  components: {
+    EiCalendar
+  },
   data() {
     return {
+      showCalendar: false,
+      bookingTypes: [{ value: "play", label: "计时" }, { value: "party", label: "派对" }, { value: "group", label: "团建" }],
+      bookingSlots: ["上午", "下午", "晚上"],
+      bookingHours: [1, 2, 3],
+      avaliableTimes: ["10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00"],
       form: {
+        bookingType: "play",
+        bookingSlot: "下午",
+        bookingHours: null,
+        bookingDate: moment().format("YYYY-MM-DD"),
+        bookingCheckinTime: "10:00",
         membersCount: 1,
         socksCount: 1
       }
@@ -54,11 +93,43 @@ export default {
   computed: {
     currentStore: sync("store/currentStore"),
     booking_avaliable() {
-      return false;
+      return !_.some(this.form, _.isNil);
     }
   },
   methods: {
-    handleBooking() {},
+    selectBookingType(item) {
+      if (item.value == "group") {
+        return uni.showModal({
+          title: "团建请联系:xxxxx",
+          showCancel: false,
+          icon: "none"
+        });
+      }
+      this.form.bookingType = item.value;
+    },
+    selectBookingSlot(item) {
+      this.form.bookingSlot = item;
+    },
+    selectBookingHour(item) {
+      this.form.bookingHours = item;
+    },
+    updateBookingCheckinTime(e) {
+      this.form.bookingCheckinTime = this.avaliableTimes[e.detail.value];
+    },
+    async handleBooking() {
+      const { bookingType, bookingSlot, bookingDate, bookingCheckinTime, bookingHours, membersCount, socksCount } = this.form;
+      uni.showLoading();
+      const res = await createBooking({
+        store: this.currentStore.id,
+        type: bookingType,
+        date: bookingDate,
+        hours: bookingHours,
+        checkInAt: bookingType == "play" ? bookingSlot : bookingCheckinTime,
+        membersCount,
+        socksCount
+      });
+      uni.hideLoading();
+    },
     phoneCall(phoneNumber) {
       uni.makePhoneCall({ phoneNumber });
     }
@@ -67,6 +138,9 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
+.disabled
+  view
+    opacity 0.5
 .payment-container
   width 100vw
   position fixed

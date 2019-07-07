@@ -40,6 +40,7 @@
 import { sync } from "vuex-pathify";
 import { wechatLogin } from "../../services";
 import login from "../login";
+import { getStores } from "../../common/vmeitime-http";
 export default {
   components: {
     login
@@ -68,12 +69,10 @@ export default {
       ],
       bannerImageUrls: [
         {
-          url:
-            "https://ossweb-img.qq.com/images/lol/web201310/skin/big21016.jpg"
+          url: "https://ossweb-img.qq.com/images/lol/web201310/skin/big21016.jpg"
         },
         {
-          url:
-            "https://ossweb-img.qq.com/images/lol/web201310/skin/big99008.jpg"
+          url: "https://ossweb-img.qq.com/images/lol/web201310/skin/big99008.jpg"
         }
       ]
     };
@@ -107,7 +106,9 @@ export default {
       uni.getLocation({
         success: async res => {
           const { latitude, longitude } = res;
-          this.currentStore = this.nearStores[0];
+          const stores = await getStores();
+          this.nearStores = stores.data;
+          this.currentStore = stores.data[0];
         },
         fail: async err => {
           uni.navigateTo({
