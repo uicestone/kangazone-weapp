@@ -11,6 +11,7 @@ export const wechatLogin = () =>
         console.log(loginRes);
         uni.getUserInfo({
           provider,
+          lang: "zh_CN",
           success: async userData => {
             // console.log(userData);
             try {
@@ -43,10 +44,10 @@ export const wechatLogin = () =>
     });
   });
 
-export const stroreUser = ({ user, session_key } = {}) => {
+export const stroreUser = ({ user, session_key, token } = {}) => {
   try {
     store.state.auth.user = user;
-    store.state.auth.token = user.token;
+    store.state.auth.token = token;
     store.state.auth.session_key = session_key;
     store.state.auth.showLogin = false;
   } catch (e) {
