@@ -10,12 +10,15 @@
         view.cu-item.light(:class="[item == selectedAmount ? 'bg-orange':'']" v-for="(item,index) in amounts" :key="index" @click="selectAmount(item)")
           view.cuIcon-recharge.text-orange
           text ￥{{item}}
-    view.flex-sub.flex.align-end
+    view.flex-sub.flex.align-end(@click="handleUserDeposit")
       button.cu-btn.block.bg-red.margin-tb-sm.lg.flex-sub 立即充值
 </template>
 
 <script>
 import { sync } from "vuex-pathify";
+import * as api from "../../common/vmeitime-http/index";
+import { handlePayment } from "../../services";
+
 export default {
   data() {
     return {
@@ -29,6 +32,11 @@ export default {
   methods: {
     selectAmount(amount) {
       this.selectedAmount = amount;
+    },
+    async handleUserDeposit() {
+      const res = await api.userDeposit({ depositLevel: this.selectedAmount });
+      const result = await handlePayment(res.data);
+      console.log(res, result);
     }
   }
 };

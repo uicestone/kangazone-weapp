@@ -111,3 +111,14 @@ export const createBooking = ({ store, type, date, hours, checkInAt, membersCoun
     data
   });
 };
+
+export const userDeposit = ({ depositLevel }) => {
+  return http.request({
+    url: `/user-deposit`,
+    method: "POST",
+    dataType: "json",
+    data: {
+      depositLevel
+    }
+  });
+};

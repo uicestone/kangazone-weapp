@@ -53,3 +53,23 @@ export const stroreUser = ({ user, session_key } = {}) => {
     console.error(e);
   }
 };
+
+export const handlePayment = paymentData =>
+  new Promise((resolve, reject) => {
+    uni.showLoading();
+    uni.requestPayment({
+      signType: "MD5",
+      ...paymentData,
+      success: res => {
+        console.log(res);
+        resolve({ ...res, ...paymentData });
+      },
+      fail: res => {
+        console.log(res);
+        reject(res);
+      },
+      complete() {
+        uni.hideLoading();
+      }
+    });
+  });
