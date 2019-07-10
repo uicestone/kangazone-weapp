@@ -11,7 +11,13 @@ pathify.options.mapping = "simple";
 
 const state = {
   loading: false,
-  currentTab: "首页"
+  currentTab: "首页",
+  configs: {
+    cardTypes: {},
+    depositLevels: [],
+    hourPrice: null,
+    hourPriceRatio: []
+  }
 };
 
 const mutations = make.mutations(state);

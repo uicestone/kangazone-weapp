@@ -44,7 +44,7 @@ export const wechatLogin = () =>
     });
   });
 
-export const stroreUser = ({ user, session_key, token } = {}) => {
+export const stroreUser = ({ user, token, session_key } = {}) => {
   try {
     store.state.auth.user = user;
     store.state.auth.token = token;

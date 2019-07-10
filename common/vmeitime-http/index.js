@@ -122,3 +122,11 @@ export const userDeposit = ({ depositLevel }) => {
     }
   });
 };
+
+export const getConfigs = () => {
+  return http.request({
+    url: `/config`,
+    method: "GET",
+    dataType: "json"
+  });
+};

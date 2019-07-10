@@ -40,7 +40,7 @@
 import { sync } from "vuex-pathify";
 import { wechatLogin } from "../../services";
 import login from "../login";
-import { getStores } from "../../common/vmeitime-http";
+import { getStores, getConfigs } from "../../common/vmeitime-http";
 export default {
   components: {
     login
@@ -80,7 +80,8 @@ export default {
   computed: {
     currentStore: sync("store/currentStore"),
     nearStores: sync("store/nearStores"),
-    auth: sync("auth")
+    auth: sync("auth"),
+    configs: sync("configs")
   },
   watch: {
     "auth.user"() {
@@ -88,10 +89,14 @@ export default {
     }
   },
   async onLoad() {
+    this.loadInitData();
     this.checkLogin();
   },
   methods: {
-    loadInitData() {},
+    async loadInitData() {
+      const res = await getConfigs();
+      this.configs = res.data;
+    },
     async checkLogin() {
       try {
         const user = await wechatLogin();
