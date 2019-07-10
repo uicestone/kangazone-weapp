@@ -50,6 +50,10 @@ export const stroreUser = ({ user, token, session_key } = {}) => {
     store.state.auth.token = token;
     store.state.auth.session_key = session_key;
     store.state.auth.showLogin = false;
+    uni.setStorage({
+      key: "token",
+      data: token
+    });
   } catch (e) {
     console.error(e);
   }

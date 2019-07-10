@@ -67,6 +67,7 @@ import EiCalendar from "../../components/ei-calendar/ei-calendar.vue";
 import moment from "moment";
 import _ from "lodash";
 import { createBooking } from "../../common/vmeitime-http";
+import { handlePayment } from "../../services";
 
 export default {
   components: {
@@ -128,6 +129,8 @@ export default {
         membersCount,
         socksCount
       });
+      const result = await handlePayment(res.data.payArgs);
+      console.log(result);
       uni.hideLoading();
     },
     phoneCall(phoneNumber) {
