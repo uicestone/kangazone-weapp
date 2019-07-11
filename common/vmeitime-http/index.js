@@ -31,7 +31,7 @@ http.interceptor.request = config => {
   const token = _.get(store, "state.auth.token");
   if (token) {
     config.header = {
-      Authorization: token
+      Authorization: `Bearer ${token}`
     };
   }
 
@@ -60,16 +60,23 @@ export const banner = data => {
   });
 };
 
-export const wechatLogin = ({ code, encryptedData, iv }) => {
+export const wechatLogin = ({ code }) => {
   return http.request({
     url: `/wechat/login`,
     method: "POST",
     dataType: "json",
     data: {
-      code,
-      encryptedData,
-      iv
+      code
     }
+  });
+};
+
+export const wechatSignup = ({ session_key, encryptedData, iv }) => {
+  return http.request({
+    url: `/wechat/signup`,
+    method: "POST",
+    dataType: "json",
+    data: { session_key, encryptedData, iv }
   });
 };
 

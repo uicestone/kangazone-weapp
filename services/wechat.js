@@ -7,7 +7,16 @@ export const wechatLogin = () =>
     uni.showLoading();
     uni.login({
       provider,
-      success: loginRes => {
+      success: async loginRes => {
+        const res = await api.wechatLogin({
+          code: loginRes.code
+        });
+        const { session_key, openid, user, token } = res.data;
+        if (user) {
+          stroreUser(res.data);
+          return resolve(res);
+        }
+        uni.showLoading();
         console.log(loginRes);
         uni.getUserInfo({
           provider,
@@ -15,8 +24,8 @@ export const wechatLogin = () =>
           success: async userData => {
             // console.log(userData);
             try {
-              const res = await api.wechatLogin({
-                code: loginRes.code,
+              const res = await api.wechatSignup({
+                session_key,
                 encryptedData: userData.encryptedData,
                 iv: userData.iv
               });
@@ -29,17 +38,20 @@ export const wechatLogin = () =>
               });
               reject(err);
             }
-            uni.hideLoading();
           },
           fail(err) {
-            uni.hideLoading();
             reject(err);
+          },
+          complete() {
+            uni.hideLoading();
           }
         });
       },
       fail(err) {
-        uni.hideLoading();
         reject(err);
+      },
+      complete() {
+        uni.hideLoading();
       }
     });
   });
@@ -50,10 +62,6 @@ export const stroreUser = ({ user, token, session_key } = {}) => {
     store.state.auth.token = token;
     store.state.auth.session_key = session_key;
     store.state.auth.showLogin = false;
-    uni.setStorage({
-      key: "token",
-      data: token
-    });
   } catch (e) {
     console.error(e);
   }

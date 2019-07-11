@@ -9,9 +9,9 @@
               view.text-gray.text-sm.padding-bottom-xs
                 text.icon-shop
                 text 营业中
-            navigator(url="/pages/store/list").margin-top
-              text 切换门店
-              text.icon-right
+            //- navigator(url="/pages/store/list").margin-top
+            //-   text 切换门店
+            //-   text.icon-right
           view.solid-top.margin-top-sm.padding-bottom-sm
           view.flex.align-center.justify-between
             view.margin-left-sm
@@ -92,9 +92,14 @@ export default {
     };
   },
   computed: {
+    configs: sync("configs"),
+    user: sync("auth/user"),
     currentStore: sync("store/currentStore"),
     booking_avaliable() {
       return !_.some(this.form, _.isNil);
+    },
+    price() {
+      const cardType = configs.cardTypes[this.user.cardType];
     }
   },
   methods: {

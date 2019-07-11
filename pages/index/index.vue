@@ -6,9 +6,9 @@
         view
           view.text-lg.text-blod {{currentStore.name}}
           view.text-sm.text-grey.margin-left-xs(v-if="currentStore.distance") 距离您{{currentStore.distance}} km
-        view
-          text 切换门店
-          text.icon-right
+        //- view
+        //-   text 切换门店
+        //-   text.icon-right
       swiper.screen-swiper(:circular='true' :autoplay='true' interval='5000' duration='500')
         swiper-item(v-for='(item,index) in bannerImageUrls' :key='index')
           img(:src='item.url' mode='aspectFill')
@@ -108,26 +108,30 @@ export default {
     },
     async checkLocation() {
       console.log("checkLocation");
-      uni.getLocation({
-        success: async res => {
-          const { latitude, longitude } = res;
-          const stores = await getStores();
-          this.nearStores = stores.data;
-          this.currentStore = stores.data[0];
-        },
-        fail: async err => {
-          uni.navigateTo({
-            url: "/pages/store/list"
-          });
-          uni.showModal({
-            title: "获取位置失败, 手动选择您最近的门店",
-            showCancel: false,
-            icon: "none"
-          });
-        }
-      });
+      const stores = await getStores();
+      this.nearStores = stores.data;
+      this.currentStore = stores.data[0];
+      // uni.getLocation({
+      //   success: async res => {
+      //     const { latitude, longitude } = res;
+      //     const stores = await getStores();
+      //     this.nearStores = stores.data;
+      //     this.currentStore = stores.data[0];
+      //   },
+      //   fail: async err => {
+      //     uni.navigateTo({
+      //       url: "/pages/store/list"
+      //     });
+      //     uni.showModal({
+      //       title: "获取位置失败, 手动选择您最近的门店",
+      //       showCancel: false,
+      //       icon: "none"
+      //     });
+      //   }
+      // });
     },
     selcectStore() {
+      return;
       uni.navigateTo({
         url: "/pages/store/list"
       });
