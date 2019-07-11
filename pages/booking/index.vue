@@ -51,12 +51,12 @@
 
 
     view.cu-bar.bg-white.tabbar.border.shop.payment-container
-      view.flex.justify-start.align-end.text-gray(style="flex:5;padding-left:20upx;font-size:25upx")
-        view(@tap="handlePolicy")
-          view 确认预约即代表您
-          view 同意我们的
-            text.text-red “预约政策”
-      view.margin-right-sm 预约金: ￥5
+      view.flex.justify-start.align-end.text-gray(style="flex:3;padding-left:20upx;font-size:25upx")
+        //- view(@tap="handlePolicy")
+        //-   view 确认预约即代表您
+        //-   view 同意我们的
+        //-     text.text-red “预约政策”
+      view.margin-right-sm 预约金: ￥{{price}}
       button.bg-red.submit.booking-button(@click="handleBooking" :disabled="!booking_avaliable") 确认预约    
 </template>
 
@@ -92,14 +92,18 @@ export default {
     };
   },
   computed: {
-    configs: sync("configs"),
+    config: sync("configs"),
     user: sync("auth/user"),
     currentStore: sync("store/currentStore"),
     booking_avaliable() {
       return !_.some(this.form, _.isNil);
     },
     price() {
-      const cardType = configs.cardTypes[this.user.cardType];
+      const cardType = this.config.cardTypes[this.user.cardType];
+      const firstHourPrice = cardType ? cardType.firstHourPrice : this.config.hourPrice;
+      return this.config.hourPriceRatio.slice(0, this.form.bookingHours).reduce((price, ratio) => {
+        return +(price + firstHourPrice * ratio).toFixed(2);
+      }, 0);
     }
   },
   methods: {
@@ -153,4 +157,6 @@ export default {
   width 100vw
   position fixed
   bottom 0
+.booking-button
+  border-radius 0
 </style>
