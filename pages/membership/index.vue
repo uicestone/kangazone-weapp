@@ -37,7 +37,8 @@ export default {
     },
     async handleUserDeposit() {
       const res = await api.userDeposit({ depositLevel: this.selectedAmount });
-      const result = await handlePayment(res.data);
+      const payArgs = res.data.payArgs;
+      const result = await handlePayment(payArgs);
       console.log(res, result);
     }
   }

@@ -170,7 +170,8 @@ export default {
         membersCount,
         socksCount
       });
-      const result = await handlePayment(res.data.payArgs);
+      const payArgs = res.data.payments.filter(payment => payment.payArgs)[0].payArgs;
+      const result = await handlePayment(payArgs);
       console.log(result);
       uni.hideLoading();
     },
