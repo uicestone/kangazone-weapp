@@ -1,5 +1,5 @@
 <template lang="pug">
-  view
+  view.booking-index-page
     view.page.padding
       view.cu-row.bg-white.radius
         view.cu-item.shadow.padding
@@ -34,7 +34,7 @@
           view.cu-form-group
             view.title 袜子数
             input.text-right(v-model="form.socksCount" placeholder="1"  type="number")
-      EiCalendar(:visible.sync="showCalendar" format="YYYY-MM-DD" v-model="form.bookingDate" )
+      EiCalendar(:visible.sync="showCalendar" :disabledDate="disabledDate" :custom-date="customDate" format="YYYY-MM-DD" v-model="form.bookingDate" @date-change="getAvailabilityDate")
 
       view(v-if="form.bookingType == 'play'")
         view.cu-row.bg-white.nav.text-center.flex.radius
@@ -66,7 +66,7 @@ import { sync } from "vuex-pathify";
 import EiCalendar from "../../components/ei-calendar/ei-calendar.vue";
 import moment from "moment";
 import _ from "lodash";
-import { createBooking } from "../../common/vmeitime-http";
+import { createBooking, getAvailabilityBooking } from "../../common/vmeitime-http";
 import { handlePayment } from "../../services";
 
 export default {
@@ -75,6 +75,10 @@ export default {
   },
   data() {
     return {
+      dates: {
+        full: [],
+        peak: []
+      },
       showCalendar: false,
       bookingTypes: [{ value: "play", label: "计时" }, { value: "party", label: "派对" }, { value: "group", label: "团建" }],
       bookingSlots: ["上午", "下午", "晚上"],
@@ -104,9 +108,37 @@ export default {
       return this.config.hourPriceRatio.slice(0, this.form.bookingHours).reduce((price, ratio) => {
         return +(price + firstHourPrice * ratio).toFixed(2);
       }, 0);
+    },
+    customDate() {
+      return this.dates.peak.map(i => ({
+        cellClass: "custom-cell",
+        date: i,
+        top: [
+          {
+            class: "custom-cell-top-1",
+            text: "热"
+          }
+        ]
+      }));
     }
   },
+  async mounted() {
+    await this.getAvailabilityDate();
+  },
   methods: {
+    disabledDate(date) {
+      date = moment(date).format("YYYY-MM-DD");
+      return this.dates.full.includes(date);
+    },
+    async getAvailabilityDate(date) {
+      const month = moment(date).format("YYYY-MM");
+
+      const {
+        form: { bookingType }
+      } = this;
+      const res = await getAvailabilityBooking({ type: bookingType, month });
+      this.dates = res.data;
+    },
     selectBookingType(item) {
       if (item.value == "group") {
         return uni.showModal({
@@ -149,14 +181,19 @@ export default {
 };
 </script>
 
-<style lang="stylus" scoped>
-.disabled
-  view
-    opacity 0.5
-.payment-container
-  width 100vw
-  position fixed
-  bottom 0
-.booking-button
-  border-radius 0
+<style lang="stylus">
+.booking-index-page
+  .disabled
+    view
+      opacity 0.5
+  .payment-container
+    width 100vw
+    position fixed
+    bottom 0
+  .booking-button
+    border-radius 0
+  .custom-cell
+    color red
+  .custom-cell-top-1
+    color red
 </style>

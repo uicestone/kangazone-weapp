@@ -110,7 +110,7 @@ export const getStores = () => {
 };
 
 export const createBooking = ({ store, type, date, hours, checkInAt, membersCount, socksCount }) => {
-  const data = _.omitBy({ store, type, date, hours, checkInAt, membersCount, socksCount }, !_.isNil);
+  const data = _.omitBy({ store, type, date, hours, checkInAt, membersCount, socksCount }, _.isNil);
   return http.request({
     url: `/booking`,
     method: "POST",
@@ -135,5 +135,15 @@ export const getConfigs = () => {
     url: `/config`,
     method: "GET",
     dataType: "json"
+  });
+};
+
+export const getAvailabilityBooking = ({ type, month, date, hours }) => {
+  const data = _.omitBy({ month, date, hours }, _.isNil);
+  return http.request({
+    url: `/booking-availability/${type}`,
+    method: "GET",
+    dataType: "json",
+    data
   });
 };
