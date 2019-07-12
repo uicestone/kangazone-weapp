@@ -109,10 +109,10 @@ export const getStores = () => {
   });
 };
 
-export const createBooking = ({ store, type, date, hours, checkInAt, membersCount, socksCount }) => {
-  const data = _.omitBy({ store, type, date, hours, checkInAt, membersCount, socksCount }, _.isNil);
+export const createBooking = ({ store, type, date, hours, checkInAt, membersCount, socksCount, code, useCredit }) => {
+  const data = _.omitBy({ store, type, date, hours, checkInAt, membersCount, socksCount, code }, _.isNil);
   return http.request({
-    url: `/booking`,
+    url: `/booking?useCredit=${useCredit}`,
     method: "POST",
     dataType: "json",
     data
@@ -159,6 +159,14 @@ export const getPayment = ({ id }) => {
 export const getBooking = ({ id }) => {
   return http.request({
     url: `/booking/${id}`,
+    method: "GET",
+    dataType: "json"
+  });
+};
+
+export const getAuthUser = () => {
+  return http.request({
+    url: `/auth/user`,
     method: "GET",
     dataType: "json"
   });

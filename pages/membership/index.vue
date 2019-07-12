@@ -19,7 +19,7 @@
 <script>
 import { sync } from "vuex-pathify";
 import * as api from "../../common/vmeitime-http/index";
-import { handlePayment } from "../../services";
+import { handlePayment, fetchUser } from "../../services";
 
 export default {
   data() {
@@ -31,6 +31,9 @@ export default {
     user: sync("auth/user"),
     configs: sync("configs")
   },
+  async mounted() {
+    await fetchUser();
+  },
   methods: {
     selectAmount(item) {
       this.selectedAmount = item.price;
@@ -39,6 +42,7 @@ export default {
       const res = await api.userDeposit({ depositLevel: this.selectedAmount });
       const payArgs = res.data.payArgs;
       const result = await handlePayment(payArgs);
+      await fetchUser();
       console.log(res, result);
     }
   }

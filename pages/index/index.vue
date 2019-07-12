@@ -83,14 +83,10 @@ export default {
     auth: sync("auth"),
     configs: sync("configs")
   },
-  watch: {
-    "auth.user"() {
-      this.checkLocation();
-    }
-  },
   async onLoad() {
     this.loadInitData();
     this.checkLogin();
+    this.checkLocation();
   },
   methods: {
     async loadInitData() {

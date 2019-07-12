@@ -50,8 +50,13 @@
           view.cu-item.flex-sub.text-lg(:class="[form.bookingHours == item? 'bg-blue': '' ]" v-for="(item,index) in bookingHours" :key="index" @click="selectBookingHour(item)") {{item}}小时
       view.cu-form-group.margin-top
         view.title 优惠券
-        picker(:value="form.bookingCode.id" range-key="id" :range="availableCodes" @change="setBookingCode")
-          view.picker {{form.bookingCode.id}}
+        picker(:value="form.bookingCode.title" range-key="title" :range="availableCodes" @change="setBookingCode")
+          view.picker {{form.bookingCode.title}}
+      view.cu-form-group
+        view.title 使用余额
+        switch.siwtch-user-creadit(@change="swtichUseCredit"  :checked="form.useCredit?true:false")
+
+      view.margin-bottom(style="margin-bottom: 200upx")
 
     view.cu-bar.bg-white.tabbar.border.shop.payment-container
       view.flex.justify-start.align-end.text-gray(style="flex:3;padding-left:20upx;font-size:25upx")
@@ -93,8 +98,10 @@ export default {
       avaliableHours: config.avaliableHours,
       form: {
         bookingCode: {
-          id: null
+          id: null,
+          title: null
         },
+        useCredit: true,
         bookingType: "play",
         bookingSlot: "下午",
         bookingHours: null,
@@ -107,10 +114,16 @@ export default {
   },
   computed: {
     config: sync("configs"),
+    auth: sync("auth"),
     user: sync("auth/user"),
     currentStore: sync("store/currentStore"),
     booking_avaliable() {
-      return !_.some(this.form, _.isNil);
+      const { bookingType, bookingSlot, bookingHours, bookingDate, bookingCheckinTime, membersCount, socksCount } = this.form;
+      if (bookingType == "play") {
+        return !_.some({ bookingType, bookingSlot, bookingDate, bookingHours, membersCount, socksCount }, _.isNil);
+      } else {
+        return !_.some({ bookingType, bookingCheckinTime, bookingDate, bookingHours, membersCount, socksCount }, _.isNil);
+      }
     },
     _availableHours() {
       if (this.hours.full.includes(this.form.bookingHours)) {
@@ -150,6 +163,10 @@ export default {
     }
   },
   methods: {
+    swtichUseCredit(e) {
+      this.form.useCredit = e.detail.value;
+      console.log(this.form.useCredit);
+    },
     disabledDate(date) {
       date = moment(date).format("YYYY-MM-DD");
       return this.dates.full.includes(date);
@@ -193,26 +210,27 @@ export default {
       this.form.bookingCode = this.availableCodes[e.detail.value];
     },
     async handleBooking() {
-      const { bookingType, bookingSlot, bookingDate, bookingCheckinTime, bookingHours, membersCount, socksCount, bookingCode } = this.form;
+      const { bookingType, bookingSlot, bookingDate, bookingCheckinTime, bookingHours, membersCount, socksCount, bookingCode, useCredit } = this.form;
       uni.showLoading();
       const res = await createBooking({
         store: this.currentStore.id,
         type: bookingType,
+        code: bookingCode.id,
         date: bookingDate,
         hours: bookingHours,
+        useCredit,
         checkInAt: bookingType == "play" ? bookingSlot : bookingCheckinTime,
         membersCount,
         socksCount
       });
-      // const result = await handlePayment(res.data.payArgs);
       const booking = res.data;
       const { payments } = booking;
 
-      payments.forEach(async payment => {
+      for (const payment of payments) {
         if (payment.payArgs) {
           await handlePayment(payment.payArgs);
         }
-      });
+      }
 
       uni.hideLoading();
       setTimeout(() => {
@@ -243,4 +261,9 @@ export default {
     color red
   .custom-cell-top-1
     color red
+  .siwtch-user-creadit
+    &::after
+      content ''
+    &::before
+      content ''
 </style>
