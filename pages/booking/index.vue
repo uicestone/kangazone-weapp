@@ -44,7 +44,7 @@
       view(v-if="form.bookingType == 'party'")
         view.cu-form-group(:class="[form.bookingHours? '':'disabled']")
           view.title 开始时间
-          picker(:value="form.bookingCheckinTime" :range="_avaliableHours" @change="updateBookingCheckinTime" :disabled="!form.bookingHours")
+          picker(:value="form.bookingCheckinTime" :range="_availableHours" @change="updateBookingCheckinTime" :disabled="!form.bookingHours")
             view.picker {{form.bookingCheckinTime}}
         view.cu-row.bg-white.nav.text-center.flex.radius
           view.cu-item.flex-sub.text-lg(:class="[form.bookingHours == item? 'bg-blue': '' ]" v-for="(item,index) in bookingHours" :key="index" @click="selectBookingHour(item)") {{item}}小时
@@ -99,7 +99,7 @@ export default {
         bookingSlot: "下午",
         bookingHours: null,
         bookingDate: moment().format("YYYY-MM-DD"),
-        bookingCheckinTime: "10:00",
+        bookingCheckinTime: null,
         membersCount: 1,
         socksCount: 1
       }
@@ -113,6 +113,9 @@ export default {
       return !_.some(this.form, _.isNil);
     },
     _availableHours() {
+      if (this.hours.full.includes(this.form.bookingHours)) {
+        this.form.bookingHours = null;
+      }
       return _.xor(this.avaliableHours, this.hours.full);
     },
     availableCodes() {
@@ -153,6 +156,8 @@ export default {
     },
     async getAvailabilityHour() {
       const { bookingDate: date, bookingHours: hours, bookingType: type } = this.form;
+      if (type !== "party") return;
+
       const res = await getAvailabilityBooking({ type, date, hours });
       this.hours = res.data;
     },
@@ -182,7 +187,7 @@ export default {
       this.form.bookingHours = item;
     },
     updateBookingCheckinTime(e) {
-      this.form.bookingCheckinTime = this._avaliableHours[e.detail.value];
+      this.form.bookingCheckinTime = this._availableHours[e.detail.value];
     },
     setBookingCode(e) {
       this.form.bookingCode = this.availableCodes[e.detail.value];
