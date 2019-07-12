@@ -42,13 +42,16 @@
         view.cu-row.bg-white.nav.text-center.flex.radius
           view.cu-item.flex-sub.text-lg(:class="[form.bookingHours == item? 'bg-blue': '' ]" v-for="(item,index) in bookingHours" :key="index" @click="selectBookingHour(item)") {{item}}小时
       view(v-if="form.bookingType == 'party'")
-        view.cu-form-group.disabled
+        view.cu-form-group(:class="[form.bookingHours? '':'disabled']")
           view.title 开始时间
-          picker(:value="form.bookingCheckinTime" :range="avaliableTimes" @change="updateBookingCheckinTime")
+          picker(:value="form.bookingCheckinTime" :range="_avaliableHours" @change="updateBookingCheckinTime" :disabled="!form.bookingHours")
             view.picker {{form.bookingCheckinTime}}
         view.cu-row.bg-white.nav.text-center.flex.radius
           view.cu-item.flex-sub.text-lg(:class="[form.bookingHours == item? 'bg-blue': '' ]" v-for="(item,index) in bookingHours" :key="index" @click="selectBookingHour(item)") {{item}}小时
-
+      view.cu-form-group.margin-top
+        view.title 优惠券
+        picker(:value="form.bookingCode.id" range-key="id" :range="availableCodes" @change="setBookingCode")
+          view.picker {{form.bookingCode.id}}
 
     view.cu-bar.bg-white.tabbar.border.shop.payment-container
       view.flex.justify-start.align-end.text-gray(style="flex:3;padding-left:20upx;font-size:25upx")
@@ -68,6 +71,7 @@ import moment from "moment";
 import _ from "lodash";
 import { createBooking, getAvailabilityBooking } from "../../common/vmeitime-http";
 import { handlePayment } from "../../services";
+import { config } from "../../config";
 
 export default {
   components: {
@@ -79,12 +83,18 @@ export default {
         full: [],
         peak: []
       },
+      hours: {
+        full: []
+      },
       showCalendar: false,
       bookingTypes: [{ value: "play", label: "计时" }, { value: "party", label: "派对" }, { value: "group", label: "团建" }],
       bookingSlots: ["上午", "下午", "晚上"],
       bookingHours: [1, 2, 3],
-      avaliableTimes: ["10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00"],
+      avaliableHours: config.avaliableHours,
       form: {
+        bookingCode: {
+          id: null
+        },
         bookingType: "play",
         bookingSlot: "下午",
         bookingHours: null,
@@ -101,6 +111,12 @@ export default {
     currentStore: sync("store/currentStore"),
     booking_avaliable() {
       return !_.some(this.form, _.isNil);
+    },
+    _availableHours() {
+      return _.xor(this.avaliableHours, this.hours.full);
+    },
+    availableCodes() {
+      return this.user.codes.filter(i => i.type == this.form.bookingType);
     },
     price() {
       const cardType = this.config.cardTypes[this.user.cardType];
@@ -125,10 +141,20 @@ export default {
   async mounted() {
     await this.getAvailabilityDate();
   },
+  watch: {
+    "form.bookingHours"(a, b) {
+      this.getAvailabilityHour();
+    }
+  },
   methods: {
     disabledDate(date) {
       date = moment(date).format("YYYY-MM-DD");
       return this.dates.full.includes(date);
+    },
+    async getAvailabilityHour() {
+      const { bookingDate: date, bookingHours: hours, bookingType: type } = this.form;
+      const res = await getAvailabilityBooking({ type, date, hours });
+      this.hours = res.data;
     },
     async getAvailabilityDate(date) {
       const month = moment(date).format("YYYY-MM");
@@ -156,10 +182,13 @@ export default {
       this.form.bookingHours = item;
     },
     updateBookingCheckinTime(e) {
-      this.form.bookingCheckinTime = this.avaliableTimes[e.detail.value];
+      this.form.bookingCheckinTime = this._avaliableHours[e.detail.value];
+    },
+    setBookingCode(e) {
+      this.form.bookingCode = this.availableCodes[e.detail.value];
     },
     async handleBooking() {
-      const { bookingType, bookingSlot, bookingDate, bookingCheckinTime, bookingHours, membersCount, socksCount } = this.form;
+      const { bookingType, bookingSlot, bookingDate, bookingCheckinTime, bookingHours, membersCount, socksCount, bookingCode } = this.form;
       uni.showLoading();
       const res = await createBooking({
         store: this.currentStore.id,
@@ -170,10 +199,22 @@ export default {
         membersCount,
         socksCount
       });
-      const payArgs = res.data.payments.filter(payment => payment.payArgs)[0].payArgs;
-      const result = await handlePayment(payArgs);
-      console.log(result);
+      // const result = await handlePayment(res.data.payArgs);
+      const booking = res.data;
+      const { payments } = booking;
+
+      payments.forEach(async payment => {
+        if (payment.payArgs) {
+          await handlePayment(payment.payArgs);
+        }
+      });
+
       uni.hideLoading();
+      setTimeout(() => {
+        uni.redirectTo({
+          url: `/pages/booking/detail?id=${booking.id}`
+        });
+      }, 1000);
     },
     phoneCall(phoneNumber) {
       uni.makePhoneCall({ phoneNumber });

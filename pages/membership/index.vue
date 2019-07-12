@@ -5,7 +5,7 @@
         view.cu-avatar.round.lg(v-if="user.avatarUrl" :style="[{ backgroundImage:'url(' + user.avatarUrl + ')' }]")
         view.margin-left(style="margin-top: 10upx")
           view.text-grey.text-xl {{user.name}}
-          view.text-grey VIP卡
+          view.text-grey VIP卡 {{user.cardType}}
           view.text-grey 余额 {{user.credit}}
       view.cu-list.grid.col-3.margin-top
         view.cu-item.light(:class="[item.price == selectedAmount ? 'bg-orange':'']" v-for="(item,index) in configs.depositLevels" :key="index" @click="selectAmount(item)")

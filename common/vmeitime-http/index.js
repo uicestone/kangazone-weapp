@@ -147,3 +147,19 @@ export const getAvailabilityBooking = ({ type, month, date, hours }) => {
     data
   });
 };
+
+export const getPayment = ({ id }) => {
+  return http.request({
+    url: `/payment/${id}`,
+    method: "GET",
+    dataType: "json"
+  });
+};
+
+export const getBooking = ({ id }) => {
+  return http.request({
+    url: `/booking/${id}`,
+    method: "GET",
+    dataType: "json"
+  });
+};
