@@ -48,11 +48,13 @@
             view.picker {{form.bookingCheckinTime}}
         view.cu-row.bg-white.nav.text-center.flex.radius
           view.cu-item.flex-sub.text-lg(:class="[form.bookingHours == item? 'bg-blue': '' ]" v-for="(item,index) in bookingHours" :key="index" @click="selectBookingHour(item)") {{item}}小时
-      view.cu-form-group.margin-top
+
+      view.margin-top   
+      view.cu-form-group(v-if="availableCodes.length >0")
         view.title 优惠券
         picker(:value="form.bookingCode.title" range-key="title" :range="availableCodes" @change="setBookingCode")
           view.picker {{form.bookingCode.title}}
-      view.cu-form-group
+      view.cu-form-group(v-if="price > 0")
         view.title 使用余额
         switch.siwtch-user-creadit(@change="swtichUseCredit"  :checked="form.useCredit?true:false")
 
@@ -99,7 +101,8 @@ export default {
       form: {
         bookingCode: {
           id: null,
-          title: null
+          title: null,
+          hours: null
         },
         useCredit: true,
         bookingType: "play",
@@ -132,12 +135,16 @@ export default {
       return _.xor(this.avaliableHours, this.hours.full);
     },
     availableCodes() {
-      return this.user.codes.filter(i => i.type == this.form.bookingType);
+      return this.user.codes.filter(i => i.type == this.form.bookingType && !i.used);
     },
     price() {
+      let hours = this.form.bookingHours;
+      if (this.form.bookingCode.hours) {
+        hours -= this.form.bookingCode.hours;
+      }
       const cardType = this.config.cardTypes[this.user.cardType];
       const firstHourPrice = cardType ? cardType.firstHourPrice : this.config.hourPrice;
-      return this.config.hourPriceRatio.slice(0, this.form.bookingHours).reduce((price, ratio) => {
+      return this.config.hourPriceRatio.slice(0, hours).reduce((price, ratio) => {
         return +(price + firstHourPrice * ratio).toFixed(2);
       }, 0);
     },
@@ -207,7 +214,8 @@ export default {
       this.form.bookingCheckinTime = this._availableHours[e.detail.value];
     },
     setBookingCode(e) {
-      this.form.bookingCode = this.availableCodes[e.detail.value];
+      const code = this.availableCodes[e.detail.value];
+      this.form.bookingCode = code;
     },
     async handleBooking() {
       const { bookingType, bookingSlot, bookingDate, bookingCheckinTime, bookingHours, membersCount, socksCount, bookingCode, useCredit } = this.form;
