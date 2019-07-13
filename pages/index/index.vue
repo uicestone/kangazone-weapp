@@ -72,10 +72,19 @@ export default {
       ],
       bannerImageUrls: [
         {
-          url: "http://www.kangazone.com/wp-content/uploads/2019/06/1920-1096.jpg"
+          url: "https://cdn.uice.lu/kanga/banner1.jpg"
         },
         {
-          url: "http://www.kangazone.com/wp-content/uploads/2019/06/%E6%8C%A1%E6%9D%BF%E5%8F%912-02.jpg"
+          url: "https://cdn.uice.lu/kanga/banner2.jpg"
+        },
+        {
+          url: "https://cdn.uice.lu/kanga/banner3.jpg"
+        },
+        {
+          url: "https://cdn.uice.lu/kanga/banner4.jpg"
+        },
+        {
+          url: "https://cdn.uice.lu/kanga/banner5.jpg"
         }
       ]
     };
