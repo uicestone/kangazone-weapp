@@ -17,8 +17,8 @@
         navigator.cu-item(url="/pages/booking/index")
           view.cu-avatar.round.lg.booking-icon.cuIcon-game.text-purple
           view.content.margin-sm
-            view.text-md.margin-top-xs 立即预约
-            view.text-gray.text-sm 无需电话、立即确认
+            view.text-md.margin-top-xs 立即签到体验
+            view.text-gray.text-sm 你需要支付10元/双的蹦床袜费用
           view.action
             text.icon-right.text-grey
             

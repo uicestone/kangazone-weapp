@@ -2,30 +2,31 @@
   view.cu-list.bg-white.margin-sm.padding.card-menu.shadow(@click="goToDetail")
     view.cu-bar.bg-white.flex.justify-between.align-center.margin-bottom-sm
       view.flex.align-center
-        view.cu-avatar.radius.bg-white
+        view.text-orange.cuIcon-weunblock
           //- img.service-icon(:src="serviceIcon(majorServices)")
         view.margin-left-sm
-          //- view {{majorServices}}
-          //- view.text-grey.text-sm {{minorServices}}
+          view.flex
+            text.text-bold.text-xl {{bookingTypeNames[booking.type]}}
+            text.text-grey.text-sm.margin-left-xs {{booking.hours ? booking.hours+'小时' : '体验'}}
       view.text-right.align-center
         view {{booking.store.name}}
-        view.text-grey.text-sm(v-if="booking.status=='BOOKED'") {{booking.date}} 到店
+        view.text-grey.text-sm(v-if="booking.status=='BOOKED'") {{booking.date}} {{booking.checkInAt}}
 
     view.cu-bar.bg-white.flex.justify-between.align-center.padding-top-sm.solid-top
       view.flex.align-center
-        //- view.cu-avatar.round.xs.bg-white(:style="[{ backgroundImage:'url(' + parseAvatar({children: booking.child}) + ')' }]")
-        //- view.margin-left-sm
-          //- text {{booking.child.name}} / {{booking.child.sex}}
+        view.cuIcon-footprint
+        view.margin-left-sm
+          text {{booking.socksCount}}双蹦床袜
       view.align-center.text-right
         //- main status
         view(v-if="booking.status=='IN_QUEUE'") 排队中
-        view(v-if="booking.status=='BOOKED'") 待到店服务
+        view(v-if="booking.status=='BOOKED'") 已签到
         view(v-if="booking.status=='IN_SERVICE'") 服务中
         view(v-if="booking.status=='FINISHED'") 已完成
         view(v-if="booking.status=='CANCELED'") 已取消
         //- more status desc
-        view(v-if="booking.assured") 
-          view.text-sm.text-grey 已付预约金¥5 预约已确认
+        view(v-if="booking.status=='BOOKED'") 
+          view.text-sm.text-grey 已支付{{booking.price}}元
           button.cu-btn(@click.stop="cancelBooking" v-if="cancelAble") 取消预约
         //- text.text-sm.text-grey(v-if="booking.status=='BOOKED'") 预约已确认
         view(v-if="booking.status=='PENDING'")
@@ -41,7 +42,11 @@ export default {
   props: ["booking"],
   data() {
     return {
-      loading: false
+      loading: false,
+      bookingTypeNames: {
+        play: "计时自由探险",
+        party: "派对和聚会"
+      }
     };
   },
   computed: {
@@ -55,11 +60,12 @@ export default {
     //     .filter(s => s.service.slotsCount === 0)
     //     .map(s => s.service.name).join(" ");
     // },
-    // cancelAble() {
-    //   const bookingTime = moment(`${this.booking.date} ${this.booking.slots[0]}`);
-    //   const diffHour = moment.duration(bookingTime.diff(moment())).asHours();
-    //   return diffHour > 8;
-    // }
+    cancelAble() {
+      return false;
+      // const bookingTime = moment(`${this.booking.date} ${this.booking.slots[0]}`);
+      // const diffHour = moment.duration(bookingTime.diff(moment())).asHours();
+      // return diffHour > 8;
+    }
   },
   methods: {
     async cancelBooking() {

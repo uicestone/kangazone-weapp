@@ -8,15 +8,17 @@
           view.text-grey VIP卡 {{user.cardType}}
           view.text-grey 余额 {{user.credit}}
       view.cu-list.grid.col-3.margin-top
-        view.cu-item.light(:class="[item.price == selectedAmount ? 'bg-orange':'']" v-for="(item,index) in configs.depositLevels" :key="index" @click="selectAmount(item)")
+        view.cu-item.light(:class="[item.price == selectedAmount ? 'bg-orange':'']" v-for="(item,index) in availableDepositLevels" :key="index" @click="selectAmount(item)")
           view.cuIcon-recharge.text-orange
-            text.text-sm 送 {{item.cardType}}
-          text ￥{{item.price}}
-      view.cu-list.grid.col-3.margin-top
-        view.cu-item.light(:class="[index == selectedCardType ? 'bg-orange':'']" v-for="(item,index) in configs.cardTypes" :key="index" @click="selectCardType({item,index})")
-          view.cuIcon-recharge.text-orange
-            text.text-sm {{index}}
-          text ￥{{item.netPrice}}
+          text.margin-bottom(style="font-size:48upx;color:#f08300;font-weight:bold") {{item.price}}
+          text.text-sm 享{{item.cardType}}卡
+          text.text-sm 首小时{{configs.cardTypes[item.cardType].firstHourPrice}}元
+          text.text-sm 体验券{{ item.rewardCodes[0].count }}张
+      //- view.cu-list.grid.col-3.margin-top
+      //-   view.cu-item.light(:class="[index == selectedCardType ? 'bg-orange':'']" v-for="(item,index) in configs.cardTypes" :key="index" @click="selectCardType({item,index})")
+      //-     view.cuIcon-recharge.text-orange
+      //-       text.text-sm {{index}}
+      //-     text ￥{{item.netPrice}}
     view.flex-sub.flex.align-end
       button.cu-btn.block.bg-red.margin-tb-sm.lg.flex-sub(@click="handleUserDeposit" v-if="selectedAmount") 立即充值
       button.cu-btn.block.bg-red.margin-tb-sm.lg.flex-sub(@click="handleMembership" v-if="selectedCardType") 立即开通
@@ -37,7 +39,27 @@ export default {
   },
   computed: {
     user: sync("auth/user"),
-    configs: sync("configs")
+    configs: sync("configs"),
+    userCardTypeIndex() {
+      if (!this.configs.depositLevels) return -1;
+      const index = this.configs.depositLevels.map(level => level.cardType).indexOf(this.user.cardType);
+      console.log("user card type index", index);
+      return index;
+    },
+    availableMembershipCardTypes() {
+      if (!this.configs.depositLevels) return [];
+      return this.configs.depositLevels
+        .filter((level, index) => {
+          return index > this.userCardTypeIndex;
+        })
+        .map(level => level.cardType);
+    },
+    availableDepositLevels() {
+      if (!this.configs.depositLevels) return [];
+      return this.configs.depositLevels.filter((level, index) => {
+        return index >= this.userCardTypeIndex;
+      });
+    }
   },
   async mounted() {
     await fetchUser();
@@ -65,6 +87,9 @@ export default {
       const result = await handlePayment(payArgs);
       await fetchUser();
       console.log(res, result);
+    },
+    isAvailableMembershipCardType(type) {
+      return this.availableMembershipCardTypes.includes(type);
     }
   }
 };

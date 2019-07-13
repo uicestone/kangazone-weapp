@@ -16,16 +16,17 @@
           view.flex.align-center.justify-between
             view.margin-left-sm
               view.text-black.text-md {{currentStore.address}}
-              view.text-gray.text-sm 距您{{currentStore.distance}} km
-            button.cu-btn.icon.bg-green(@click="phoneCall(currentStore.phone)")
+              //- view.text-gray.text-sm 距您{{currentStore.distance}} km
+            button.cu-btn.icon.bg-green(v-if="currentStore.phone" @click="phoneCall(currentStore.phone)")
               text.cuIcon-phone
       
       view.cu-row.bg-white.nav.text-center.flex.radius.margin-tb
-        view.cu-item.flex-sub.text-lg(:class="[form.bookingType == item.value? 'bg-blue': '' ]" v-for="(item,index) in bookingTypes" :key="index" @click="selectBookingType(item)") {{item.label}}
+        view.cu-item.flex-sub.text-lg(:class="[form.bookingType == item.value? 'bg-purple': '' ]" v-for="(item,index) in bookingTypes" :key="index" @click="selectBookingType(item)") {{item.label}}
 
       view.cu-row.margin-tb.radius
         form.cu-item.shadow
-          view.cu-form-group(@click="showCalendar = true")
+          //- view.cu-form-group(@click="showCalendar = true")
+          view.cu-form-group()
             view.title 日期
             view.text-right {{form.bookingDate}}
           view.cu-form-group
@@ -38,25 +39,25 @@
 
       view(v-if="form.bookingType == 'play'")
         view.cu-row.bg-white.nav.text-center.flex.radius
-          view.cu-item.flex-sub.text-lg(:class="[form.bookingSlot == item? 'bg-blue': '' ]" v-for="(item,index) in bookingSlots" :key="index" @click="selectBookingSlot(item)") {{item}}
+          view.cu-item.flex-sub.text-lg(:class="[form.bookingSlot == item? 'bg-purple': '' ]" v-for="(item,index) in bookingSlots" :key="index" @click="selectBookingSlot(item)") {{item}}
         view.cu-row.bg-white.nav.text-center.flex.radius
-          view.cu-item.flex-sub.text-lg(:class="[form.bookingHours == item? 'bg-blue': '' ]" v-for="(item,index) in bookingHours" :key="index" @click="selectBookingHour(item)") {{item}}小时
+          view.cu-item.flex-sub.text-lg(:class="[form.bookingHours == item? 'bg-purple': '' ]" v-for="(item,index) in bookingHours" :key="index" @click="selectBookingHour(item)") {{item > 0 ? (item+'小时') : '体验'}}
       view(v-if="form.bookingType == 'party'")
         view.cu-form-group(:class="[form.bookingHours? '':'disabled']")
           view.title 开始时间
           picker(:value="form.bookingCheckinTime" :range="_availableHours" @change="updateBookingCheckinTime" :disabled="!form.bookingHours")
             view.picker {{form.bookingCheckinTime}}
         view.cu-row.bg-white.nav.text-center.flex.radius
-          view.cu-item.flex-sub.text-lg(:class="[form.bookingHours == item? 'bg-blue': '' ]" v-for="(item,index) in bookingHours" :key="index" @click="selectBookingHour(item)") {{item}}小时
+          view.cu-item.flex-sub.text-lg(:class="[form.bookingHours == item? 'bg-purple': '' ]" v-for="(item,index) in bookingHours" :key="index" @click="selectBookingHour(item)") {{item}}小时
 
       view.margin-top   
       view.cu-form-group(v-if="availableCodes.length >0")
         view.title 优惠券
-        picker(:value="form.bookingCode.title" range-key="title" :range="availableCodes" @change="setBookingCode")
-          view.picker {{form.bookingCode.title}}
-      view.cu-form-group(v-if="price > 0")
-        view.title 使用余额
-        switch.siwtch-user-creadit(@change="swtichUseCredit"  :checked="form.useCredit?true:false")
+        picker(disabled :value="form.bookingCode.title" range-key="title" :range="availableCodes" @change="setBookingCode")
+          view.picker {{form.bookingCode.title || '不使用'}}
+      //- view.cu-form-group(v-if="price > 0")
+      //-   view.title 使用余额
+      //-   switch.siwtch-user-creadit(@change="swtichUseCredit"  :checked="form.useCredit?true:false")
 
       view.margin-bottom(style="margin-bottom: 200upx")
 
@@ -66,8 +67,8 @@
         //-   view 确认预约即代表您
         //-   view 同意我们的
         //-     text.text-red “预约政策”
-      view.margin-right-sm 预约金: ￥{{price}}
-      button.bg-red.submit.booking-button(@click="handleBooking" :disabled="!booking_avaliable") 确认预约    
+      view.margin-right.text-orange(style="font-size:50upx;font-weight:bold") ￥{{price}}
+      button.bg-orange.submit.booking-button(@click="handleBooking" :disabled="!booking_avaliable") 确认付款  
 </template>
 
 
@@ -96,7 +97,7 @@ export default {
       showCalendar: false,
       bookingTypes: [{ value: "play", label: "计时" }, { value: "party", label: "派对" }, { value: "group", label: "团建" }],
       bookingSlots: ["上午", "下午", "晚上"],
-      bookingHours: [1, 2, 3],
+      bookingHours: [0, 1, 2, 3],
       avaliableHours: config.avaliableHours,
       form: {
         bookingCode: {
@@ -107,7 +108,7 @@ export default {
         useCredit: true,
         bookingType: "play",
         bookingSlot: "下午",
-        bookingHours: null,
+        bookingHours: 0,
         bookingDate: moment().format("YYYY-MM-DD"),
         bookingCheckinTime: null,
         membersCount: 1,
@@ -144,9 +145,11 @@ export default {
       }
       const cardType = this.config.cardTypes[this.user.cardType];
       const firstHourPrice = cardType ? cardType.firstHourPrice : this.config.hourPrice;
-      return this.config.hourPriceRatio.slice(0, hours).reduce((price, ratio) => {
+      const playPrice = this.config.hourPriceRatio.slice(0, hours).reduce((price, ratio) => {
         return +(price + firstHourPrice * ratio).toFixed(2);
       }, 0);
+      const socksPrice = 10 * this.form.socksCount;
+      return playPrice + socksPrice;
     },
     customDate() {
       return this.dates.peak.map(i => ({
@@ -195,9 +198,9 @@ export default {
       this.dates = res.data;
     },
     selectBookingType(item) {
-      if (item.value == "group") {
+      if (["group", "party"].includes(item.value)) {
         return uni.showModal({
-          title: "团建请联系:xxxxx",
+          title: "敬请期待",
           showCancel: false,
           icon: "none"
         });
