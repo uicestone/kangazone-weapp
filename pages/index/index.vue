@@ -72,10 +72,10 @@ export default {
       ],
       bannerImageUrls: [
         {
-          url: "https://ossweb-img.qq.com/images/lol/web201310/skin/big21016.jpg"
+          url: "http://www.kangazone.com/wp-content/uploads/2019/06/1920-1096.jpg"
         },
         {
-          url: "https://ossweb-img.qq.com/images/lol/web201310/skin/big99008.jpg"
+          url: "http://www.kangazone.com/wp-content/uploads/2019/06/%E6%8C%A1%E6%9D%BF%E5%8F%912-02.jpg"
         }
       ]
     };
