@@ -171,3 +171,22 @@ export const getAuthUser = () => {
     dataType: "json"
   });
 };
+
+export const postUserMembership = ({ cardType }) => {
+  return http.request({
+    url: `/user-membership`,
+    method: "POST",
+    dataType: "json",
+    data: {
+      cardType
+    }
+  });
+};
+
+export const getBookings = () => {
+  return http.request({
+    url: `/booking`,
+    method: "GET",
+    dataType: "json"
+  });
+};

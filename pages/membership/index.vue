@@ -10,10 +10,17 @@
       view.cu-list.grid.col-3.margin-top
         view.cu-item.light(:class="[item.price == selectedAmount ? 'bg-orange':'']" v-for="(item,index) in configs.depositLevels" :key="index" @click="selectAmount(item)")
           view.cuIcon-recharge.text-orange
-            text.text-sm {{item.cardType}}
+            text.text-sm 送 {{item.cardType}}
           text ￥{{item.price}}
+      view.cu-list.grid.col-3.margin-top
+        view.cu-item.light(:class="[index == selectedCardType ? 'bg-orange':'']" v-for="(item,index) in configs.cardTypes" :key="index" @click="selectCardType({item,index})")
+          view.cuIcon-recharge.text-orange
+            text.text-sm {{index}}
+          text ￥{{item.netPrice}}
     view.flex-sub.flex.align-end
-      button.cu-btn.block.bg-red.margin-tb-sm.lg.flex-sub(@click="handleUserDeposit") 立即充值
+      button.cu-btn.block.bg-red.margin-tb-sm.lg.flex-sub(@click="handleUserDeposit" v-if="selectedAmount") 立即充值
+      button.cu-btn.block.bg-red.margin-tb-sm.lg.flex-sub(@click="handleMembership" v-if="selectedCardType") 立即开通
+
 </template>
 
 <script>
@@ -24,7 +31,8 @@ import { handlePayment, fetchUser } from "../../services";
 export default {
   data() {
     return {
-      selectedAmount: null
+      selectedAmount: null,
+      selectedCardType: null
     };
   },
   computed: {
@@ -36,10 +44,23 @@ export default {
   },
   methods: {
     selectAmount(item) {
+      this.selectedCardType = null;
       this.selectedAmount = item.price;
+    },
+    selectCardType({ item, index }) {
+      this.selectedAmount = null;
+      this.selectedCardType = index;
     },
     async handleUserDeposit() {
       const res = await api.userDeposit({ depositLevel: this.selectedAmount });
+      const payArgs = res.data.payArgs;
+      const result = await handlePayment(payArgs);
+      await fetchUser();
+      console.log(res, result);
+    },
+    async handleMembership() {
+      const { selectedCardType } = this;
+      const res = await api.postUserMembership({ cardType: selectedCardType });
       const payArgs = res.data.payArgs;
       const result = await handlePayment(payArgs);
       await fetchUser();

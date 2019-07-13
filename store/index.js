@@ -3,6 +3,7 @@ import Vuex from "vuex";
 import pathify, { make } from "vuex-pathify";
 
 import auth from "./auth";
+import booking from "./booking";
 import _store from "./store";
 
 Vue.use(Vuex);
@@ -26,7 +27,7 @@ const store = new Vuex.Store({
   plugins: [pathify.plugin],
   state,
   mutations,
-  modules: { auth, store: _store }
+  modules: { auth, store: _store, booking }
 });
 
 Vue.prototype.$store = store;

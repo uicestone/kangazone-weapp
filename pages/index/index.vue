@@ -12,12 +12,13 @@
       swiper.screen-swiper(:circular='true' :autoplay='true' interval='5000' duration='500')
         swiper-item(v-for='(item,index) in bannerImageUrls' :key='index')
           img(:src='item.url' mode='aspectFill')
-      view.flex.justify-end(@click="goBookingList")
-        view.padding-right.padding-top-sm
+      view.cu-item.flex.justify-end
+        view.padding-right.padding-top-sm(@click="goBookingList" )
           text 所有预约
           text.icon-right
+      booking-card(v-for="(booking, index) in currBookings" :key="index" :booking="booking")
       view.cu-list.menu.card-menu.margin-top.shadow
-        navigator(url="/pages/booking/index").cu-item
+        navigator.cu-item(url="/pages/booking/index")
           view.cu-avatar.round.lg.booking-icon
             img(:src="require('../../static/booking.png')")
           view.content.margin-sm
@@ -40,7 +41,7 @@
 import { sync } from "vuex-pathify";
 import { wechatLogin } from "../../services";
 import login from "../login";
-import { getStores, getConfigs } from "../../common/vmeitime-http";
+import { getStores, getConfigs, getBookings } from "../../common/vmeitime-http";
 export default {
   components: {
     login
@@ -78,15 +79,25 @@ export default {
     };
   },
   computed: {
+    session_key: sync("auth/session_key"),
     currentStore: sync("store/currentStore"),
     nearStores: sync("store/nearStores"),
     auth: sync("auth"),
-    configs: sync("configs")
+    configs: sync("configs"),
+    bookings: sync("booking/bookings"),
+    currBookings() {
+      return this.bookings.filter(i => i.status == "PENDING" || i.status == "BOOKED");
+    }
   },
   async onLoad() {
     this.loadInitData();
-    this.checkLogin();
-    this.checkLocation();
+    await this.checkLogin();
+    await this.checkLocation();
+    await this.getBookings();
+  },
+  async onShow() {
+    if (!this.session_key) return;
+    await this.getBookings();
   },
   methods: {
     async loadInitData() {
@@ -126,6 +137,10 @@ export default {
       //   }
       // });
     },
+    async getBookings() {
+      const res = await getBookings();
+      this.bookings = res.data;
+    },
     selcectStore() {
       return;
       uni.navigateTo({
@@ -140,6 +155,11 @@ export default {
     goLogin() {
       uni.navigateTo({
         url: "/pages/login"
+      });
+    },
+    goBookingList() {
+      uni.navigateTo({
+        url: "/pages/booking/list"
       });
     }
   }

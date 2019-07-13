@@ -1,9 +1,9 @@
 <template lang="pug">
   view
-    scroll-view.nav
+    scroll-view.nav.padding
       view
         text.text-lg.text-bold 抵用券
-        view(v-for="(item,index) in user.codes" :key="index") {{item.title}}
+        view.cu-row.bg-white.radius.shadow.padding.margin-top-sm(v-for="(item,index) in user.codes" :key="index") {{item.title}}
 
 </template>
 <script>
