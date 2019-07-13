@@ -12,22 +12,18 @@
       swiper.screen-swiper(:circular='true' :autoplay='true' interval='5000' duration='500')
         swiper-item(v-for='(item,index) in bannerImageUrls' :key='index')
           img(:src='item.url' mode='aspectFill')
-      view.cu-item.flex.justify-end
-        view.padding-right.padding-top-sm(@click="goBookingList" )
-          text 所有预约
-          text.icon-right
       booking-card(v-for="(booking, index) in currBookings" :key="index" :booking="booking")
       view.cu-list.menu.card-menu.margin-top.shadow
         navigator.cu-item(url="/pages/booking/index")
-          view.cu-avatar.round.lg.booking-icon
-            img(:src="require('../../static/booking.png')")
+          view.cu-avatar.round.lg.booking-icon.cuIcon-game.text-purple
           view.content.margin-sm
             view.text-md.margin-top-xs 立即预约
             view.text-gray.text-sm 无需电话、立即确认
           view.action
             text.icon-right.text-grey
-      view.cu-list.grid.col-3.card-menu.padding.actions-container.shadow.margin-bottom-lg
-        view.flex.justify-center.align-center(
+            
+      view.cu-list.grid.col-2.card-menu
+        view.cu-item(
           v-for="(item,index) in menus1",
           @click="navigateTo(item.to)",
           :key='index', 
@@ -50,22 +46,28 @@ export default {
     return {
       menus1: [
         {
-          icon: "baby",
-          color: "mauve",
-          title: "会员卡",
-          to: "/pages/membership/index"
+          icon: "profile",
+          color: "yellow",
+          title: "个人资料",
+          to: "/pages/user/detail"
         },
         {
-          icon: "redpacket",
+          icon: "ticket",
           color: "red",
           title: "优惠券",
           to: "/pages/coupons/index"
         },
         {
-          icon: "profilefill",
+          icon: "form",
           color: "purple",
-          title: "个人资料",
-          to: "/pages/user/detail"
+          title: "所有预约",
+          to: "/pages/booking/list"
+        },
+        {
+          icon: "vipcard",
+          color: "orange",
+          title: "会员卡",
+          to: "/pages/membership/index"
         }
       ],
       bannerImageUrls: [
@@ -155,11 +157,6 @@ export default {
     goLogin() {
       uni.navigateTo({
         url: "/pages/login"
-      });
-    },
-    goBookingList() {
-      uni.navigateTo({
-        url: "/pages/booking/list"
       });
     }
   }
