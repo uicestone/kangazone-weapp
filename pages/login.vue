@@ -1,8 +1,8 @@
 <template lang="pug">
-  view.cu-modal(:class="[auth.showLogin ? 'show':'']")
+  view.cu-modal.bottom-modal(:class="[auth.showLogin ? 'show':'']")
     view.cu-dialog.no-bg
-      view.cu-bar
-        button.flex-sub(type='primary', open-type='getUserInfo', @getuserinfo='wechatLogin', withcredentials='true') 微信登录
+      view.cu-bar.bg-purple
+        button.bg-purple.flex-sub(open-type='getUserInfo', @getuserinfo='wechatLogin', withcredentials='true') 微信登录
  
 </template>
 

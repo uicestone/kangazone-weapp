@@ -1,5 +1,5 @@
 <template lang="pug">
-  view
+  view.padding-bottom
     login
     scroll-view.page(:scroll-y="true")
       view.flex.justify-between.padding.align-center(@click="selcectStore")
