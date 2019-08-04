@@ -25,6 +25,14 @@ export const config = {
     "19:30",
     "20:00",
     "20:30",
-    "21:00",
-  ]
+    "21:00"
+  ],
+  statusLabel: {
+    PENDING: "待付款",
+    BOOKED: "待服务",
+    IN_QUEUE: "排队中",
+    CANCELED: "已取消",
+    IN_SERVICE: "服务中",
+    FINISHED: "已完成"
+  }
 };

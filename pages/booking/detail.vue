@@ -1,13 +1,14 @@
 <template lang="pug">
   view
-    view.response.bg-purple(style="position: absolute; top: 0;height: 380upx;z-index:-1")
-      view.cu-bar.bg-purple.flex.justify-between.align-start.margin-top-lg.padding-lr
+    view.response
+      img.bg.response(:src="bgUrl" mode="widthFix")
+      view.cu-bar.flex.justify-between.align-center.margin-top-lg.padding-lr
         view.margin-left-sm
           view.text-white.text-xl 预约信息
-        view
-          view.text-white.text-lg {{booking.customer.name}}
-          view.text-white.text-lg {{booking.customer.mobile}}
-      view.cu-card
+          view
+            view.text-white.text-lg {{booking.customer.name}} {{booking.customer.mobile}}
+        view.text-white {{ statusLabel[booking.status] }}
+      view.cu-card(style="margin-top: 100upx")
         view.cu-item.shadow.padding
           view.solid-bottom.flex.justify-between.align-center
             view.padding
@@ -51,6 +52,7 @@
 <script>
 import { moment } from "../../utils";
 import { getBooking } from "../../common/vmeitime-http";
+import { config } from "../../config";
 
 export default {
   async onLoad(data) {
@@ -60,6 +62,8 @@ export default {
   },
   data() {
     return {
+      bgUrl: "/static/booking_detail_bg.png",
+      statusLabel: config.statusLabel,
       booking: {
         customer: {
           name: "",

@@ -1,17 +1,16 @@
 <template lang="pug">
   view
-    scroll-view.page(:scroll-y="true")
-      view.flex.justify-center.margin-top-xl
-        view.cu-avatar.round.xl(v-if="form.avatarUrl" :style="[{ backgroundImage:'url(' + form.avatarUrl + ')' }]")
-      view.margin
+    view
+      img.bg.response(:src="bgUrl" mode="widthFix")
+      view.flex.justify-center(style="margin-top: 120upx")
+        view.cu-avatar.round.avatar(v-if="form.avatarUrl" :style="[{ backgroundImage:'url(' + form.avatarUrl + ')' }]")
+      view.padding.radius(style="margin-top: 100upx")
         view.cu-form-group.no-bg
           view.title 姓名
           text.text-bold.text-right {{ user.name}}
-				
         view.cu-form-group.no-bg
           view.title 性別
           view.text-bold.text-right {{ form.gender == "1" ? "男": "女" }}
-
         view.cu-form-group.no-bg
           view.title 手机号
           text.text-bold.text-right(v-if="user.mobile") {{user.mobile}}
@@ -29,6 +28,7 @@ import { wechatDecrypt, updateUser } from "../../common/vmeitime-http";
 export default {
   data() {
     return {
+      bgUrl: "/static/user_profile_bg.png",
       form: {
         gender: null,
         birthday: null,
@@ -75,9 +75,11 @@ export default {
 };
 </script>
 
-<style lang="stylus">
+<style lang="stylus" scoped>
 .page
-  background white
   height 100vh
   widows 100vw
+.avatar
+  width 160upx
+  height 160upx
 </style>

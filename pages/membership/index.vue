@@ -1,14 +1,19 @@
 <template lang="pug">
-  view.page.padding.flex.flex-direction
-    view
-      view.cu-row.shadow.bg-black.member-card.flex.padding
-        view.cu-avatar.round.lg(v-if="user.avatarUrl" :style="[{ backgroundImage:'url(' + user.avatarUrl + ')' }]")
-        view.margin-left(style="margin-top: 10upx")
-          view.text-grey.text-xl {{user.name}}
-          view.text-grey VIP卡 {{user.cardType}}
-          view.text-grey 余额 {{user.credit}}
-      view.cu-list.grid.col-3.margin-top
-        view.cu-item.light(:class="[item.price == selectedAmount ? 'bg-orange':'']" v-for="(item,index) in availableDepositLevels" :key="index" @click="selectAmount(item)")
+  view.page.flex.flex-direction
+    img.bg.response(:src="bgUrl" mode="widthFix")
+    img.bg-bottom.response(:src="bgUrl1" mode="widthFix")
+    view.padding(style="margin-top: 200upx")
+      view.shadow.member-card.bg-img(:style="{ backgroundImage:'url(' + cardBgUrl + ')'}")
+        view.cu-row.flex(style="height: 220upx")
+          view.cu-avatar.round.lg(v-if="user.avatarUrl" :style="{ backgroundImage:'url(' + user.avatarUrl + ')'}")
+          view.margin-left(style="margin-top: 20upx")
+            view(style="color: #a98042;font-size: 55upx") {{user.name}}
+            view.text-white(style="margin-top: 10upx") VIP卡 {{user.cardType}}
+        view.cu-row.padding-left-xs.user-credit.flex.justify-between.align-center
+          view.text-black 余额: {{user.credit}}
+          view.text-white.text-xs No.{{user.id}}
+      view.cu-list.grid.col-3.margin-top(style="background: transparent ")
+        view.cu-item.light.bg-white(:class="[item.price == selectedAmount ? 'bg-orange':'']" v-for="(item,index) in availableDepositLevels" :key="index" @click="selectAmount(item)")
           view.cuIcon-recharge.text-orange
           text.margin-bottom(style="font-size:48upx;color:#f08300;font-weight:bold") {{item.price}}
           text.text-sm 享{{item.cardType}}卡
@@ -19,7 +24,7 @@
       //-     view.cuIcon-recharge.text-orange
       //-       text.text-sm {{index}}
       //-     text ￥{{item.netPrice}}
-    view.flex-sub.flex.align-end
+    view.flex-sub.flex.align-end.padding
       button.cu-btn.block.bg-red.margin-tb-sm.lg.flex-sub(@click="handleUserDeposit" v-if="selectedAmount") 立即充值
       button.cu-btn.block.bg-red.margin-tb-sm.lg.flex-sub(@click="handleMembership" v-if="selectedCardType") 立即开通
 
@@ -33,6 +38,9 @@ import { handlePayment, fetchUser } from "../../services";
 export default {
   data() {
     return {
+      bgUrl: "/static/membership_bg.png",
+      bgUrl1: "/static/bg_1.png",
+      cardBgUrl: "/static/membership_card_bg.png",
       selectedAmount: null,
       selectedCardType: null
     };
@@ -101,8 +109,10 @@ export default {
   height 100vh
   widows 100vw
 .member-card
-  height 250upx
+  height 350upx
+  background-size contain
   border-radius 10upx
+  padding 80upx 70upx 0
 .topup-button
   width 100%
   position fixed

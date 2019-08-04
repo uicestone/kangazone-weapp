@@ -9,12 +9,12 @@
         //- view
         //-   text 切换门店
         //-   text.icon-right
-      swiper.screen-swiper(:circular='true' :autoplay='true' interval='5000' duration='500')
-        swiper-item(v-for='(item,index) in bannerImageUrls' :key='index')
+      swiper.screen-swiper.padding.radius(:circular='true' :autoplay='true' interval='5000' duration='500')
+        swiper-item.radius(v-for='(item,index) in bannerImageUrls' :key='index')
           img(:src='item.url' mode='aspectFill')
       booking-card(v-for="(booking, index) in currBookings" :key="index" :booking="booking")
       view.cu-list.menu.card-menu.margin-top.shadow
-        navigator.cu-item(url="/pages/booking/index")
+        navigator.cu-item.shadow.booking-button(url="/pages/booking/index" :style="{backgroundImage:'url(' + buttonBgUrl + ')'}")
           view.cu-avatar.round.lg.booking-icon.cuIcon-game.text-purple
           view.content.margin-sm
             view.text-md.margin-top-xs 立即签到体验
@@ -30,6 +30,8 @@
           :class="[index != 0 ? 'solid-left': '']")
           view.text-xl(:class="['cuIcon-' + item.icon,'text-' + item.color]", style="font-size: 50upx")
           view.margin-xs.text-lg {{item.title}}
+      img.logo.margin-top-xl(:src="logo" mode="aspectFit")
+      
 </template>
 
 
@@ -44,6 +46,8 @@ export default {
   },
   data() {
     return {
+      logo: "/static/logo.png",
+      buttonBgUrl: "/static/button_bg_1.png",
       menus1: [
         {
           icon: "profile",
@@ -187,4 +191,8 @@ export default {
     width 100%
     object-fit contain
     display block
+.booking-button
+  background-position right
+  background-size 50%
+  background-repeat no-repeat
 </style>

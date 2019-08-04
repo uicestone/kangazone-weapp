@@ -1,5 +1,6 @@
 <template lang="pug">
   view.booking-index-page
+    img.bg-bottom.response(:src="bgUrl" mode="widthFix")
     view.page.padding
       view.cu-row.bg-white.radius
         view.cu-item.shadow.padding
@@ -21,12 +22,14 @@
               text.cuIcon-phone
       
       view.cu-row.bg-white.nav.text-center.flex.radius.margin-tb
-        view.cu-item.flex-sub.text-lg(:class="[form.bookingType == item.value? 'bg-purple': '' ]" v-for="(item,index) in bookingTypes" :key="index" @click="selectBookingType(item)") {{item.label}}
+        view.cu-item.flex-sub.text-lg(:class="[form.bookingType == item.value? 'bg-purple': '' ]" v-for="(item,index) in bookingTypes" :key="index" @click="selectBookingType(item)") 
+          text(:class="[item.icon]")
+          text {{" "+item.label}}
 
       view.cu-row.margin-tb.radius
         form.cu-item.shadow
           //- view.cu-form-group(@click="showCalendar = true")
-          view.cu-form-group()
+          view.cu-form-group
             view.title 日期
             view.text-right {{form.bookingDate}}
           view.cu-form-group
@@ -87,6 +90,7 @@ export default {
   },
   data() {
     return {
+      bgUrl: "/static/bg_1.png",
       dates: {
         full: [],
         peak: []
@@ -95,7 +99,11 @@ export default {
         full: []
       },
       showCalendar: false,
-      bookingTypes: [{ value: "play", label: "计时" }, { value: "party", label: "派对" }, { value: "group", label: "团建" }],
+      bookingTypes: [
+        { value: "play", label: "计时", icon: ".cuIcon-remind" },
+        { value: "party", label: "派对", icon: ".cuIcon-discoverfill" },
+        { value: "group", label: "团建", icon: ".cuIcon-activityfill" }
+      ],
       bookingSlots: ["上午", "下午", "晚上"],
       bookingHours: [0, 1, 2, 3],
       avaliableHours: config.avaliableHours,
