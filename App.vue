@@ -16,7 +16,6 @@ export default {
 @import 'common/colorui/main.css'
 @import 'common/colorui/icon.css'
 @import 'common/colorui/animation.css'
-
 .logo
   width 100%
   height 100upx
@@ -32,4 +31,12 @@ export default {
   bottom 0
   left 0
   z-index -100
+.bg-purple
+  background-color #361936
+.text-purple
+  color #361936
+.bg-orange
+  background-color #e08631
+.text-orange
+  color #e08631
 </style>
