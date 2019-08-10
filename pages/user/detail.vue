@@ -2,7 +2,7 @@
   view
     view
       img.bg.response(:src="bgUrl" mode="widthFix")
-      view.flex.justify-center(style="margin-top: 120upx")
+      view.flex.justify-center(style="margin-top: 88upx")
         view.cu-avatar.round.avatar(v-if="form.avatarUrl" :style="[{ backgroundImage:'url(' + form.avatarUrl + ')' }]")
       view.padding.radius(style="margin-top: 100upx")
         view.cu-form-group.no-bg
@@ -80,6 +80,6 @@ export default {
   height 100vh
   widows 100vw
 .avatar
-  width 160upx
-  height 160upx
+  width 205upx
+  height 205upx
 </style>
