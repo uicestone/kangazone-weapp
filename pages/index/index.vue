@@ -1,7 +1,7 @@
 <template lang="pug">
   view.padding-bottom
     login
-    scroll-view.page(:scroll-y="true")
+    view.page
       view.flex.justify-between.padding.align-center(@click="selcectStore")
         view
           view.text-lg.text-blod {{currentStore.name}}
@@ -30,7 +30,7 @@
           :class="[index != 0 ? 'solid-left': '']")
           view.text-xl(:class="['cuIcon-' + item.icon,'text-' + item.color]", style="font-size: 50upx")
           view.margin-xs.text-lg {{item.title}}
-      img.logo.margin-top-xl(:src="logo" mode="aspectFit")
+      img.logo.margin-top-xl.margin-bottom(:src="logo" mode="aspectFit")
       
 </template>
 

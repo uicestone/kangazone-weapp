@@ -1,14 +1,13 @@
 <template lang="pug">
   view
-    scroll-view.nav
-      view.bg-white.flex.text-center
-        view.cu-item.flex-sub(
-          v-for="(item,index) in tabs"
-          :class="index==currentTabIndex?'text-blue cur':''"  
-          :key='index'
-          :data-id='index'
-          @tap="tabSelect(index)") {{item.title}}
-      booking-card(v-for="(booking, index) in bookingsOfTab[currentTabIndex]" :key="index" :booking="booking")
+    view.nav.bg-white.flex.text-center
+      view.cu-item.flex-sub(
+        v-for="(item,index) in tabs"
+        :class="index==currentTabIndex?'text-blue cur':''"  
+        :key='index'
+        :data-id='index'
+        @tap="tabSelect(index)") {{item.title}}
+    booking-card(v-for="(booking, index) in bookingsOfTab[currentTabIndex]" :key="index" :booking="booking")
 </template>
 
 <script>
