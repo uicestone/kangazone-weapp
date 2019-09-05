@@ -1,7 +1,7 @@
 <template lang="pug">
   view.nav.padding
     text.cuIcon-ticket.text-orange(style="font-size: 50upx")
-    text.text-lg(style="margin-left: 10upx") 抵用券
+    text.text-lg(style="margin-left: 10upx") 优惠券
     view(v-for="(item,index) in user.codes" :key="index")
       view.bg-img.coupon1.flex.align-center.margin-top-sm(:style="{ backgroundImage:'url(' + bg_1 + ')'}")
         view.flex.justify-center(style="width: 200upx;")

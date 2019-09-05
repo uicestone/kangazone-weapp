@@ -1,20 +1,21 @@
 <template lang="pug">
-  view.padding-bottom
-    login
+  view
+    login(@success="wechatGetUserInfoSuccess" @fail="wechatGetUserInfoFail")
     view.page
-      view.flex.justify-between.padding.align-center(@click="selcectStore")
-        view
+      view.flex.justify-between.padding.align-center(@click="selectStore")
+        view.flex.align-center
+          view.cuIcon-locationfill.margin-right-xs
           view.text-lg.text-blod {{currentStore.name}}
           view.text-sm.text-grey.margin-left-xs(v-if="currentStore.distance") 距离您{{currentStore.distance}} km
         //- view
         //-   text 切换门店
         //-   text.icon-right
-      swiper.screen-swiper.padding.radius(:circular='true' :autoplay='true' interval='5000' duration='500')
+      swiper.screen-swiper(:circular='true' :autoplay='true' interval='5000' duration='500')
         swiper-item.radius(v-for='(item,index) in bannerImageUrls' :key='index')
           img(:src='item.url' mode='aspectFill')
       booking-card(v-for="(booking, index) in currBookings" :key="index" :booking="booking")
       view.cu-list.menu.card-menu.margin-top.shadow
-        navigator.cu-item.shadow.booking-button(url="/pages/booking/index" :style="{backgroundImage:'url(' + buttonBgUrl + ')'}")
+        view.cu-item.shadow.booking-button(@click="navigateTo('/pages/booking/index')" :style="{backgroundImage:'url(' + buttonBgUrl + ')'}")
           view.cu-avatar.round.lg.booking-icon.cuIcon-game.text-purple
           view.content.margin-sm
             view.text-md.margin-top-xs 立即签到体验
@@ -30,14 +31,14 @@
           :class="[index != 0 ? 'solid-left': '']")
           view.text-xl(:class="['cuIcon-' + item.icon,'text-' + item.color]", style="font-size: 50upx")
           view.margin-xs.text-lg {{item.title}}
-      img.logo.margin-top-xl.margin-bottom(:src="logo" mode="aspectFit")
+      img.logo.margin-bottom(:src="logo" mode="aspectFit" style="margin-top:100upx")
       
 </template>
 
 
 <script>
 import { sync } from "vuex-pathify";
-import { wechatLogin } from "../../services";
+import { wechatLogin, wechatGetUserInfo } from "../../services";
 import login from "../login";
 import { getStores, getConfigs, getBookings } from "../../common/vmeitime-http";
 export default {
@@ -125,8 +126,15 @@ export default {
         console.log(user);
       } catch (error) {
         console.error(error);
-        this.auth.showLogin = true;
       }
+    },
+    async wechatGetUserInfo(force = false) {
+      if (this.auth.user.name) return;
+      this.auth.showLogin = force ? "FORCE" : true;
+      return new Promise((resolve, reject) => {
+        this.wechatGetUserInfoSuccess = resolve;
+        this.wechatGetUserInfoFail = reject;
+      });
     },
     async checkLocation() {
       console.log("checkLocation");
@@ -156,20 +164,20 @@ export default {
       const res = await getBookings();
       this.bookings = res.data;
     },
-    selcectStore() {
+    selectStore() {
       return;
       uni.navigateTo({
         url: "/pages/store/list"
       });
     },
-    navigateTo(url) {
+    async navigateTo(url) {
+      try {
+        await this.wechatGetUserInfo(url === "/pages/booking/index");
+      } catch (err) {
+        console.error("用户拒绝授权用户信息");
+      }
       uni.navigateTo({
         url
-      });
-    },
-    goLogin() {
-      uni.navigateTo({
-        url: "/pages/login"
       });
     }
   }

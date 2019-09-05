@@ -7,11 +7,11 @@
         view.cu-row.flex(style="height: 220upx")
           view.cu-avatar.round.lg(v-if="user.avatarUrl" :style="{ backgroundImage:'url(' + user.avatarUrl + ')'}")
           view.margin-left(style="margin-top: 20upx")
-            view(style="color: #a98042;font-size: 55upx") {{user.name}}
+            view(style="color: #a98042;font-size: 55upx") {{user.name || '[未知用户]'}}
             view.text-white(style="margin-top: 10upx") VIP卡 {{user.cardType}}
         view.cu-row.padding-left-xs.user-credit.flex.justify-between.align-center
-          view.text-black 余额: {{user.credit}}
-          view.text-white.text-xs No.{{user.id}}
+          view.text-black 余额: {{user.credit || 0}}
+          view.text-white.text-xs No. {{cardNo}}
       view.cu-list.grid.col-3.margin-top(style="background: transparent ")
         view.cu-item.light.bg-white(:class="[item.price == selectedAmount ? 'bg-orange':'']" v-for="(item,index) in availableDepositLevels" :key="index" @click="selectAmount(item)")
           view.cuIcon-recharge.text-orange
@@ -67,6 +67,9 @@ export default {
       return this.configs.depositLevels.filter((level, index) => {
         return index >= this.userCardTypeIndex;
       });
+    },
+    cardNo() {
+      return this.user.id.substr(-6);
     }
   },
   async mounted() {

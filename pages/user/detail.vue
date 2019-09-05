@@ -3,14 +3,14 @@
     view
       img.bg.response(:src="bgUrl" mode="widthFix")
       view.flex.justify-center(style="margin-top: 88upx")
-        view.cu-avatar.round.avatar(v-if="form.avatarUrl" :style="[{ backgroundImage:'url(' + form.avatarUrl + ')' }]")
+        view.cu-avatar.round.avatar(:style="[{ backgroundImage:'url(' + form.avatarUrl + ')' }]")
       view.padding.radius(style="margin-top: 100upx")
         view.cu-form-group.no-bg
           view.title 姓名
           text.text-bold.text-right {{ user.name}}
         view.cu-form-group.no-bg
           view.title 性別
-          view.text-bold.text-right {{ form.gender == "1" ? "男": "女" }}
+          view.text-bold.text-right {{ form.gender }}
         view.cu-form-group.no-bg
           view.title 手机号
           text.text-bold.text-right(v-if="user.mobile") {{user.mobile}}

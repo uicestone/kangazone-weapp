@@ -13,39 +13,9 @@ export const wechatLogin = () =>
         });
         const { session_key, openid, user, token } = res.data;
         if (user) {
-          stroreUser(res.data);
+          storeUser(res.data);
           return resolve(res);
         }
-        uni.showLoading();
-        console.log(loginRes);
-        uni.getUserInfo({
-          provider,
-          lang: "zh_CN",
-          success: async userData => {
-            // console.log(userData);
-            try {
-              const res = await api.wechatSignup({
-                session_key,
-                encryptedData: userData.encryptedData,
-                iv: userData.iv
-              });
-              stroreUser(res.data);
-              resolve(res);
-            } catch (err) {
-              uni.showToast({
-                title: "登录失败",
-                icon: "none"
-              });
-              reject(err);
-            }
-          },
-          fail(err) {
-            reject(err);
-          },
-          complete() {
-            uni.hideLoading();
-          }
-        });
       },
       fail(err) {
         reject(err);
@@ -56,12 +26,46 @@ export const wechatLogin = () =>
     });
   });
 
-export const stroreUser = ({ user, token, session_key } = {}) => {
+export const wechatGetUserInfo = () =>
+  new Promise((resolve, reject) => {
+    const provider = "weixin";
+    uni.showLoading();
+    uni.getUserInfo({
+      provider,
+      lang: "zh_CN",
+      success: async userData => {
+        // console.log(userData);
+        try {
+          const res = await api.wechatSignup({
+            session_key: store.state.auth.session_key,
+            encryptedData: userData.encryptedData,
+            iv: userData.iv
+          });
+          storeUser(res.data);
+          resolve(res);
+        } catch (err) {
+          uni.showToast({
+            title: "登录失败",
+            icon: "none"
+          });
+          reject(err);
+        }
+      },
+      fail(err) {
+        reject(err);
+      },
+      complete() {
+        uni.hideLoading();
+      }
+    });
+  });
+
+export const storeUser = ({ user, token, session_key } = {}) => {
   try {
     store.state.auth.user = user;
     store.state.auth.token = token;
     store.state.auth.session_key = session_key;
-    store.state.auth.showLogin = false;
+    // store.state.auth.showLogin = false;
   } catch (e) {
     console.error(e);
   }
