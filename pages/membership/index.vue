@@ -3,7 +3,8 @@
     img.bg.response(:src="bgUrl" mode="widthFix")
     img.bg-bottom.response(:src="bgUrl1" mode="widthFix")
     view.padding(style="margin-top: 200upx")
-      view.shadow.member-card.bg-img(:style="{ backgroundImage:'url(' + cardBgUrl + ')'}")
+      view.shadow.member-card.bg-img.relative
+        img.member-card-bg.absolute(:src="cardBgUrl" mode='aspectFill')        
         view.cu-row.flex(style="height: 220upx")
           view.cu-avatar.round.lg(v-if="user.avatarUrl" :style="{ backgroundImage:'url(' + user.avatarUrl + ')'}")
           view.margin-left(style="margin-top: 20upx")
@@ -116,6 +117,12 @@ export default {
   background-size contain
   border-radius 10upx
   padding 80upx 70upx 0
+  .member-card-bg
+    left 20upx
+    top 0
+    z-index -100
+    height 350upx
+    width 650upx
 .topup-button
   width 100%
   position fixed

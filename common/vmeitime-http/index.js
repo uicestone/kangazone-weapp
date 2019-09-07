@@ -93,6 +93,20 @@ export const wechatDecrypt = ({ session_key, encryptedData, iv }) => {
   });
 };
 
+export const updateMobile = ({ session_key, encryptedData, iv, openid }) => {
+  return http.request({
+    url: `/wechat/update-mobile`,
+    method: "POST",
+    dataType: "json",
+    data: {
+      session_key,
+      encryptedData,
+      iv,
+      openid
+    }
+  });
+};
+
 export const updateUser = ({ userId, data }) => {
   return http.request({
     url: `/user/${userId}`,
@@ -113,6 +127,16 @@ export const createBooking = ({ store, type, date, hours, checkInAt, membersCoun
   const data = _.omitBy({ store, type, date, hours, checkInAt, membersCount, socksCount, code }, _.isNil);
   return http.request({
     url: `/booking?useCredit=${useCredit}`,
+    method: "POST",
+    dataType: "json",
+    data
+  });
+};
+
+export const getBookingPrice = ({ store, type, date, hours, checkInAt, membersCount, socksCount, code, useCredit }) => {
+  const data = _.omitBy({ store, type, date, hours, checkInAt, membersCount, socksCount, code }, _.isNil);
+  return http.request({
+    url: `/booking-price`,
     method: "POST",
     dataType: "json",
     data

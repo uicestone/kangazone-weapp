@@ -64,14 +64,16 @@
 
       view.margin-bottom(style="margin-bottom: 200upx")
 
-    view.cu-bar.bg-white.tabbar.border.shop.payment-container
+    view.cu-bar.bg-white.tabbar.border.shop.payment-container(v-if="user.mobile" )
       view.flex.justify-start.align-end.text-gray(style="flex:3;padding-left:20upx;font-size:25upx")
         //- view(@tap="handlePolicy")
         //-   view 确认预约即代表您
         //-   view 同意我们的
         //-     text.text-red “预约政策”
       view.margin-right.text-orange(style="font-size:50upx;font-weight:bold") ￥{{price}}
-      button.bg-orange.submit.booking-button(@click="handleBooking" :disabled="!booking_avaliable") 确认付款  
+      button.bg-orange.submit.booking-button(@click="handleBooking" :disabled="!booking_avaliable") 确认付款
+    button.cu-btn.lg.block.bg-green.payment-container(v-if="!user.mobile" open-type='getPhoneNumber' @getphonenumber="getPhoneNumber" style="border-radius: 0") 绑定手机号
+
 </template>
 
 
@@ -80,7 +82,7 @@ import { sync } from "vuex-pathify";
 import EiCalendar from "../../components/ei-calendar/ei-calendar.vue";
 import moment from "moment";
 import _ from "lodash";
-import { createBooking, getAvailabilityBooking } from "../../common/vmeitime-http";
+import { createBooking, getAvailabilityBooking, getBookingPrice, updateMobile } from "../../common/vmeitime-http";
 import { handlePayment } from "../../services";
 import { config } from "../../config";
 
@@ -107,6 +109,8 @@ export default {
       bookingSlots: ["上午", "下午", "晚上"],
       bookingHours: [0, 1, 2, 3],
       avaliableHours: config.avaliableHours,
+      price: 0,
+      loadingPrice: false,
       form: {
         bookingCode: {
           id: null,
@@ -146,19 +150,6 @@ export default {
     availableCodes() {
       return this.user.codes.filter(i => i.type == this.form.bookingType && !i.used);
     },
-    price() {
-      let hours = this.form.bookingHours;
-      if (this.form.bookingCode.hours) {
-        hours -= this.form.bookingCode.hours;
-      }
-      const cardType = this.config.cardTypes[this.user.cardType];
-      const firstHourPrice = cardType ? cardType.firstHourPrice : this.config.hourPrice;
-      const playPrice = this.config.hourPriceRatio.slice(0, hours).reduce((price, ratio) => {
-        return +(price + firstHourPrice * ratio).toFixed(2);
-      }, 0);
-      const socksPrice = 10 * this.form.socksCount;
-      return playPrice + socksPrice;
-    },
     customDate() {
       return this.dates.peak.map(i => ({
         cellClass: "custom-cell",
@@ -178,9 +169,43 @@ export default {
   watch: {
     "form.bookingHours"(a, b) {
       this.getAvailabilityHour();
+    },
+    form: {
+      async handler() {
+        if (this.loadingPrice) return;
+        this.loadingPrice = true;
+        const { bookingType, bookingSlot, bookingDate, bookingCheckinTime, bookingHours, membersCount, socksCount, bookingCode, useCredit } = this.form;
+        const res = await getBookingPrice({
+          store: this.currentStore.id,
+          type: bookingType,
+          code: bookingCode.id,
+          date: bookingDate,
+          hours: bookingHours,
+          useCredit,
+          checkInAt: bookingType == "play" ? bookingSlot : bookingCheckinTime,
+          membersCount,
+          socksCount
+        });
+        this.price = res.data.price;
+        this.loadingPrice = false;
+      },
+      immediate: true,
+      deep: true
     }
   },
   methods: {
+    async getPhoneNumber(res) {
+      const { iv, encryptedData } = res.detail;
+      const {
+        session_key,
+        user: { openid }
+      } = this.auth;
+      uni.showLoading();
+
+      const response = await updateMobile({ iv, encryptedData, session_key, openid });
+      this.user = response.data;
+      uni.hideLoading();
+    },
     swtichUseCredit(e) {
       this.form.useCredit = e.detail.value;
       console.log(this.form.useCredit);

@@ -1,7 +1,10 @@
-const isProd = true || process.env === "production";
+const isProd = false || process.env === "production";
+
+//http://kanga-test.uice.lu/api
+//http://localhost:8080/api
 
 export const config = {
-  API_ENDPOINT: isProd ? "https://kangazone.com/api" : "http://localhost:8080/api",
+  API_ENDPOINT: isProd ? "https://api.kangazone.com" : "http://localhost:8080/api",
   avaliableHours: [
     "10:00",
     "10:30",

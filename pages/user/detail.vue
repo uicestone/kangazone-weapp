@@ -23,7 +23,7 @@
 
 <script>
 import { sync, get } from "vuex-pathify";
-import { wechatDecrypt, updateUser } from "../../common/vmeitime-http";
+import { wechatDecrypt, updateUser, updateMobile } from "../../common/vmeitime-http";
 
 export default {
   data() {
@@ -45,20 +45,22 @@ export default {
   methods: {
     async getPhoneNumber(res) {
       const { iv, encryptedData } = res.detail;
-      const { session_key } = this.auth;
+      const {
+        session_key,
+        user: { openid }
+      } = this.auth;
       uni.showLoading();
 
-      console.log(res);
-      console.log(session_key, encryptedData, iv);
-
-      const response = await wechatDecrypt({ iv, encryptedData, session_key });
-      const { phoneNumber } = response.data;
-      await this.updateUserProfile({ mobile: phoneNumber });
+      const response = await updateMobile({ iv, encryptedData, session_key, openid });
+      this.user = response.data;
       uni.hideLoading();
+      uni.redirectTo({
+        url: "/pages/index/index"
+      });
     },
     async updateUserProfile({ mobile }) {
       const userId = this.user.id;
-      const req = await updateUser({ userId, data: { mobile, userId } });
+      const req = await updateUser({ userId, data: { mobile } });
       if (req) {
         uni.redirectTo({
           url: "/pages/index/index"

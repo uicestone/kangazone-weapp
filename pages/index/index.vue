@@ -15,7 +15,8 @@
           img(:src='item.url' mode='aspectFill')
       booking-card(v-for="(booking, index) in currBookings" :key="index" :booking="booking")
       view.cu-list.menu.card-menu.margin-top.shadow
-        view.cu-item.shadow.booking-button(@click="navigateTo('/pages/booking/index')" :style="{backgroundImage:'url(' + buttonBgUrl + ')'}")
+        view.cu-item.shadow.booking-button(@click="navigateTo('/pages/booking/index')")
+          img.absolute(:src="buttonBgUrl"  mode='aspectFit')
           view.cu-avatar.round.lg.booking-icon.cuIcon-game.text-purple
           view.content.margin-sm
             view.text-md.margin-top-xs 立即签到体验
@@ -200,7 +201,7 @@ export default {
     object-fit contain
     display block
 .booking-button
-  background-position right
-  background-size 50%
-  background-repeat no-repeat
+  img
+    right 0
+    width 50%
 </style>

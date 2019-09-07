@@ -16,6 +16,10 @@ export default {
 @import 'common/colorui/main.css'
 @import 'common/colorui/icon.css'
 @import 'common/colorui/animation.css'
+
+.page
+  height 100vh
+  widows 100vw
 .logo
   width 100%
   height 100upx
@@ -39,4 +43,8 @@ export default {
   background-color #e08631
 .text-orange
   color #e08631
+.absolute
+  position absolute
+.relative
+  position relative
 </style>
