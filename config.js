@@ -1,4 +1,4 @@
-const isProd = false || process.env === "production";
+const isProd = true || process.env === "production";
 
 //http://kanga-test.uice.lu/api
 //http://localhost:8080/api
