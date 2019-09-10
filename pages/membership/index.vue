@@ -70,7 +70,7 @@ export default {
       });
     },
     cardNo() {
-      return this.user.id.substr(-6);
+      return this.user.cardNo || "未领取实体卡";
     }
   },
   async mounted() {
