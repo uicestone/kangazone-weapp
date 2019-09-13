@@ -17,8 +17,9 @@
         view.cu-item.light.bg-white(:class="[item.price == selectedAmount ? 'bg-orange':'']" v-for="(item,index) in availableDepositLevels" :key="index" @click="selectAmount(item)")
           view.cuIcon-recharge.text-orange
           text.margin-bottom(style="font-size:48upx;color:#f08300;font-weight:bold") {{item.price}}
-          text.text-sm 享{{item.cardType}}卡
-          text.text-sm 首小时{{configs.cardTypes[item.cardType].firstHourPrice}}元
+          text.reward-credit-text 送{{item.rewardCredit}}
+          //- text.text-sm 享{{item.cardType}}卡
+          //- text.text-sm 首小时{{configs.cardTypes[item.cardType].firstHourPrice}}元
           text.text-sm 体验券{{ item.rewardCodes[0].count }}张
       //- view.cu-list.grid.col-3.margin-top
       //-   view.cu-item.light(:class="[index == selectedCardType ? 'bg-orange':'']" v-for="(item,index) in configs.cardTypes" :key="index" @click="selectCardType({item,index})")
@@ -65,9 +66,10 @@ export default {
     },
     availableDepositLevels() {
       if (!this.configs.depositLevels) return [];
-      return this.configs.depositLevels.filter((level, index) => {
-        return index >= this.userCardTypeIndex;
-      });
+      return this.configs.depositLevels;
+      // return this.configs.depositLevels.filter((level, index) => {
+      //   return index >= this.userCardTypeIndex;
+      // });
     },
     cardNo() {
       return this.user.cardNo || "未领取实体卡";
@@ -128,4 +130,7 @@ export default {
   position fixed
   botton 100upx
   left 0
+.reward-credit-text
+  font-size 45upx !important
+  color #3b1638 !important
 </style>
