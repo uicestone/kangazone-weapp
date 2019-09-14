@@ -11,7 +11,8 @@
             view(style="color: #a98042;font-size: 55upx") {{user.name || '[未知用户]'}}
             view.text-white(style="margin-top: 10upx") VIP卡 {{user.cardType}}
         view.cu-row.padding-left-xs.user-credit.flex.justify-between.align-center
-          view.text-black 余额: {{user.credit || 0}}
+          view.text-black(style="verticle-align:center") 余额: {{user.credit || 0}}
+            text.text-xs(v-if="user.creditReward") （其中{{user.creditReward}}为赠送余额）
           view.text-white.text-xs No. {{cardNo}}
       view.cu-list.grid.col-3.margin-top(style="background: transparent ")
         view.cu-item.light.bg-white(:class="[item.price == selectedAmount ? 'bg-orange':'']" v-for="(item,index) in availableDepositLevels" :key="index" @click="selectAmount(item)")
@@ -20,7 +21,7 @@
           text.reward-credit-text 送{{item.rewardCredit}}
           //- text.text-sm 享{{item.cardType}}卡
           //- text.text-sm 首小时{{configs.cardTypes[item.cardType].firstHourPrice}}元
-          text.text-sm 体验券{{ item.rewardCodes[0].count }}张
+          text.text-sm(v-if="item.rewardCodes[0]") 体验券{{ item.rewardCodes[0].count }}张
       //- view.cu-list.grid.col-3.margin-top
       //-   view.cu-item.light(:class="[index == selectedCardType ? 'bg-orange':'']" v-for="(item,index) in configs.cardTypes" :key="index" @click="selectCardType({item,index})")
       //-     view.cuIcon-recharge.text-orange
