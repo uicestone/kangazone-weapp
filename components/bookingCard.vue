@@ -19,11 +19,11 @@
           text {{booking.socksCount}}双蹦床袜
       view.align-center.text-right
         //- main status
-        view(v-if="booking.status=='IN_QUEUE'") 排队中
         view(v-if="booking.status=='BOOKED'") 已签到
         view(v-if="booking.status=='IN_SERVICE'") 服务中
         view(v-if="booking.status=='FINISHED'") 已完成
         view(v-if="booking.status=='CANCELED'") 已取消
+        view(v-if="booking.status=='PENDING_REFUND'") 待退款
         //- more status desc
         view(v-if="booking.status=='BOOKED'") 
           view.text-sm.text-grey 已支付{{booking.price}}元

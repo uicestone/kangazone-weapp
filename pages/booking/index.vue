@@ -107,7 +107,7 @@ export default {
         { value: "group", label: "团建", icon: ".cuIcon-activityfill" }
       ],
       bookingSlots: ["上午", "下午", "晚上"],
-      bookingHours: [0, 1, 2, 3],
+      bookingHours: [1, 2, 3],
       avaliableHours: config.avaliableHours,
       price: 0,
       loadingPrice: false,
