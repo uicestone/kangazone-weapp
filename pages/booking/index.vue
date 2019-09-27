@@ -28,8 +28,7 @@
 
       view.cu-row.margin-tb.radius
         form.cu-item.shadow
-          //- view.cu-form-group(@click="showCalendar = true")
-          view.cu-form-group
+          view.cu-form-group(@click="showCalendar = true")
             view.title 日期
             view.text-right {{form.bookingDate}}
           view.cu-form-group
@@ -42,7 +41,7 @@
 
       view(v-if="form.bookingType == 'play'")
         view.cu-row.bg-white.nav.text-center.flex.radius
-          view.cu-item.flex-sub.text-lg(:class="[form.bookingSlot == item? 'bg-purple': '' ]" v-for="(item,index) in bookingSlots" :key="index" @click="selectBookingSlot(item)") {{item}}
+          view.cu-item.flex-sub.text-lg(:class="[item.label === form.bookingSlot ? 'bg-purple' : '', item.isValid ? '' : 'text-grey']" v-for="item in bookingSlots" :key="item.label" @click="selectBookingSlot(item)") {{item.label}}
         view.cu-row.bg-white.nav.text-center.flex.radius
           view.cu-item.flex-sub.text-lg(:class="[form.bookingHours == item? 'bg-purple': '' ]" v-for="(item,index) in bookingHours" :key="index" @click="selectBookingHour(item)") {{item > 0 ? (item+'小时') : '体验'}}
       view(v-if="form.bookingType == 'party'")
@@ -106,7 +105,7 @@ export default {
         { value: "party", label: "派对", icon: ".cuIcon-discoverfill" },
         { value: "group", label: "团建", icon: ".cuIcon-activityfill" }
       ],
-      bookingSlots: ["上午", "下午", "晚上"],
+      bookingSlots: [{ label: "上午", until: "12:00:00" }, { label: "下午", until: "17:00:00" }, { label: "晚上", until: "20:00:00" }],
       bookingHours: [1, 2, 3],
       avaliableHours: config.avaliableHours,
       price: 0,
@@ -119,8 +118,8 @@ export default {
         },
         useCredit: true,
         bookingType: "play",
-        bookingSlot: "下午",
-        bookingHours: 0,
+        bookingSlot: null,
+        bookingHours: 1,
         bookingDate: moment().format("YYYY-MM-DD"),
         bookingCheckinTime: null,
         membersCount: 1,
@@ -165,10 +164,14 @@ export default {
   },
   async mounted() {
     await this.getAvailabilityDate();
+    this.markValidSlots();
   },
   watch: {
     "form.bookingHours"(a, b) {
       this.getAvailabilityHour();
+    },
+    "form.bookingDate"(a, b) {
+      this.markValidSlots();
     },
     form: {
       async handler() {
@@ -211,6 +214,13 @@ export default {
       console.log(this.form.useCredit);
     },
     disabledDate(date) {
+      if (
+        moment(date)
+          .endOf("day")
+          .toDate() < new Date()
+      ) {
+        return true;
+      }
       date = moment(date).format("YYYY-MM-DD");
       return this.dates.full.includes(date);
     },
@@ -240,8 +250,41 @@ export default {
       }
       this.form.bookingType = item.value;
     },
-    selectBookingSlot(item) {
-      this.form.bookingSlot = item;
+    bookingSlotIsValid(slot) {
+      const isValid = new Date() < moment(this.form.bookingDate + " " + slot.until).toDate();
+      console.log(this.form.bookingDate + " " + slot.until, isValid);
+      return isValid;
+    },
+    markValidSlots() {
+      this.form.bookingSlot = null;
+      this.bookingSlots = this.bookingSlots.map(slot => {
+        if (this.bookingSlotIsValid(slot)) {
+          slot.isValid = true;
+          if (!this.form.bookingSlot) {
+            this.form.bookingSlot = slot.label;
+          }
+        } else {
+          delete slot.isValid;
+        }
+        return slot;
+      });
+    },
+    selectBookingSlot(slot) {
+      if (!this.bookingSlotIsValid(slot)) {
+        return false;
+      }
+      this.form.bookingSlot = slot.label;
+    },
+    slotItemClass(slot) {
+      // const classObject = {
+      //   "bg-purple": slot.label === this.form.bookingSlot,
+      //   "text-grey": !this.bookingSlotIsValid(slot)
+      // };
+      // console.log(classObject);
+      // return classObject;
+      const classArray = [slot.label === this.form.bookingSlot ? "bg-purple" : "", this.bookingSlotIsValid(slot) ? "" : "text-grey"];
+      console.log(classArray);
+      return classArray;
     },
     selectBookingHour(item) {
       this.form.bookingHours = item;
