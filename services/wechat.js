@@ -45,7 +45,7 @@ export const wechatGetUserInfo = () =>
           resolve(res);
         } catch (err) {
           uni.showToast({
-            title: "登录失败",
+            title: err.message,
             icon: "none"
           });
           reject(err);

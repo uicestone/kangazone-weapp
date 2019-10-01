@@ -2,7 +2,7 @@
     "name" : "Kanga Zone",
     "appid" : "__UNI__991921B",
     "description" : "",
-    "versionName" : "0.9.8",
+    "versionName" : "0.9.9",
     "versionCode" : "100",
     "transformPx" : false,
     "app-plus" : {
@@ -59,8 +59,8 @@
         "setting" : {
             "urlCheck" : true,
             "minified" : true,
-            "es6" : false,
-            "postcss" : false
+            "es6" : true,
+            "postcss" : true
         },
         "usingComponents" : true,
         "permission" : {

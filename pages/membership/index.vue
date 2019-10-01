@@ -9,7 +9,7 @@
           view.cu-avatar.round.lg(v-if="user.avatarUrl" :style="{ backgroundImage:'url(' + user.avatarUrl + ')'}")
           view.margin-left(style="margin-top: 20upx")
             view(style="color: #a98042;font-size: 55upx") {{user.name || '[未知用户]'}}
-            view.text-white(style="margin-top: 10upx") VIP卡 {{user.cardType}}
+            view.text-white(v-if="user.cardType" style="margin-top: 10upx") VIP卡 {{user.cardType}}
         view.cu-row.padding-left-xs.user-credit.flex.justify-between.align-center
           view.text-black(style="verticle-align:center") 余额: {{user.credit || 0}}
             text.text-xs(v-if="user.creditReward") （其中{{user.creditReward}}为赠送余额）
