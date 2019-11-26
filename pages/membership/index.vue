@@ -19,17 +19,10 @@
       view.cu-list.grid.col-3.margin-top(style="background: transparent ")
         view.cu-item.light.bg-white(:class="[item.price == selectedAmount ? 'bg-orange':'']" v-for="(item,index) in availableDepositLevels" :key="index" @click="selectAmount(item)" v-if="!item.counterOnly")
           view.cuIcon-recharge.text-orange
-          text.margin-bottom(style="font-size:48upx;color:#f08300;font-weight:bold") {{item.price}}
+          text.margin-bottom(style="font-size:40upx;color:#f08300;font-weight:bold") {{item.depositCredit || item.desc}}
           text.reward-credit-text(v-if="item.rewardCredit") 送{{item.rewardCredit}}
           text {{item.desc}}
-          //- text.text-sm 享{{item.cardType}}卡
-          //- text.text-sm 首小时{{configs.cardTypes[item.cardType].firstHourPrice}}元
           text.text-sm(v-if="item.rewardCodes && item.rewardCodes.length && item.depositCredit") {{item.rewardCodes[0].title}}x{{ item.rewardCodes[0].count }}
-      //- view.cu-list.grid.col-3.margin-top
-      //-   view.cu-item.light(:class="[index == selectedCardType ? 'bg-orange':'']" v-for="(item,index) in configs.cardTypes" :key="index" @click="selectCardType({item,index})")
-      //-     view.cuIcon-recharge.text-orange
-      //-       text.text-sm {{index}}
-      //-     text ￥{{item.netPrice}}
     view.flex-sub.flex.align-end.padding
       button.cu-btn.block.bg-red.margin-tb-sm.lg.flex-sub(@click="handleUserDeposit" v-if="selectedAmount") 立即充值
       button.cu-btn.block.bg-red.margin-tb-sm.lg.flex-sub(@click="handleMembership" v-if="selectedCardType") 立即开通
