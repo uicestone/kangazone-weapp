@@ -43,7 +43,7 @@
         view.cu-row.bg-white.nav.text-center.flex.radius
           view.cu-item.flex-sub.text-lg(:class="[item.label === form.bookingSlot ? 'bg-purple' : '', item.isValid ? '' : 'text-grey']" v-for="item in bookingSlots" :key="item.label" @click="selectBookingSlot(item)") {{item.label}}
         view.cu-row.bg-white.nav.text-center.flex.radius
-          view.cu-item.flex-sub.text-lg(:class="[form.bookingHours == item? 'bg-purple': '' ]" v-for="(item,index) in bookingHours" :key="index" @click="selectBookingHour(item)") {{item > 0 ? (item+'小时') : '体验'}}
+          view.cu-item.flex-sub.text-lg(:class="[form.bookingHours == item? 'bg-purple': '' ]" v-for="(item,index) in bookingHours" :key="index" @click="selectBookingHour(item)") {{item == 0 ? '畅玩':(item+'小时') }}
       view(v-if="form.bookingType == 'party'")
         view.cu-form-group(:class="[form.bookingHours? '':'disabled']")
           view.title 开始时间
@@ -106,7 +106,7 @@ export default {
         { value: "group", label: "团建", icon: ".cuIcon-activityfill" }
       ],
       bookingSlots: [{ label: "上午", until: "12:00:00" }, { label: "下午", until: "17:00:00" }, { label: "晚上", until: "20:00:00" }],
-      bookingHours: [1, 2, 3],
+      bookingHours: [1, 2, 0],
       avaliableHours: config.avaliableHours,
       price: 0,
       loadingPrice: false,
