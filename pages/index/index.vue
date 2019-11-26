@@ -60,7 +60,7 @@ export default {
         {
           icon: "ticket",
           color: "red",
-          title: "优惠券",
+          title: "券码",
           to: "/pages/coupons/index"
         },
         {

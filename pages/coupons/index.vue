@@ -2,12 +2,12 @@
   view.nav.padding
     view(v-if="user.codes.length >0")
       text.cuIcon-ticket.text-orange(style="font-size: 50upx")
-      text.text-lg(style="margin-left: 10upx") 优惠券
+      text.text-lg(style="margin-left: 10upx") 券码
       view( v-for="(item,index) in user.codes" :key="index")
         view.bg-img.coupon1.flex.align-center.margin-top-sm
           img.img-bg.absolute(:src="bg_1" mode='aspectFit')
           view.s-1.flex.justify-center(style="")
-            text 
+            text(v-if="!item.expiresAt").padding-left.text-gray 长期有效
           view.s-2.flex.justify-center
             text.text-xl {{item.title}}
           view.s-3.flex.justify-center(@click="goBooking")

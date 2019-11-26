@@ -11,17 +11,20 @@
             view(style="color: #a98042;font-size: 55upx") {{user.name || '[未知用户]'}}
             view.text-white(v-if="user.cardType" style="margin-top: 10upx") VIP卡 {{user.cardType}}
         view.cu-row.padding-left-xs.user-credit.flex.justify-between.align-center
-          view.text-black(style="verticle-align:center") 余额: {{user.credit || 0}}
-            text.text-xs(v-if="user.creditReward") （其中{{user.creditReward}}为赠送余额）
+          view.flex
+            view.text-black(style="verticle-align:center") 余额: {{user.credit || 0}}
+              text.text-xs(v-if="user.creditReward") （其中{{user.creditReward}}为赠送余额）
+            view.text-black.margin-left-sm(style="verticle-align:center" v-if="user.codes && user.codes.length") 券码: {{user.codes.length}}
           view.text-white.text-xs No. {{cardNo}}
       view.cu-list.grid.col-3.margin-top(style="background: transparent ")
-        view.cu-item.light.bg-white(:class="[item.price == selectedAmount ? 'bg-orange':'']" v-for="(item,index) in availableDepositLevels" :key="index" @click="selectAmount(item)")
+        view.cu-item.light.bg-white(:class="[item.price == selectedAmount ? 'bg-orange':'']" v-for="(item,index) in availableDepositLevels" :key="index" @click="selectAmount(item)" v-if="!item.counterOnly")
           view.cuIcon-recharge.text-orange
           text.margin-bottom(style="font-size:48upx;color:#f08300;font-weight:bold") {{item.price}}
-          text.reward-credit-text 送{{item.rewardCredit}}
+          text.reward-credit-text(v-if="item.rewardCredit") 送{{item.rewardCredit}}
+          text {{item.desc}}
           //- text.text-sm 享{{item.cardType}}卡
           //- text.text-sm 首小时{{configs.cardTypes[item.cardType].firstHourPrice}}元
-          text.text-sm(v-if="item.rewardCodes[0]") 体验券{{ item.rewardCodes[0].count }}张
+          text.text-sm(v-if="item.rewardCodes && item.rewardCodes.length && item.depositCredit") {{item.rewardCodes[0].title}}x{{ item.rewardCodes[0].count }}
       //- view.cu-list.grid.col-3.margin-top
       //-   view.cu-item.light(:class="[index == selectedCardType ? 'bg-orange':'']" v-for="(item,index) in configs.cardTypes" :key="index" @click="selectCardType({item,index})")
       //-     view.cuIcon-recharge.text-orange
@@ -45,6 +48,7 @@ export default {
       bgUrl1: "/static/bg_1.png",
       cardBgUrl: "/static/membership_card_bg.png",
       selectedAmount: null,
+      selectedDepositLevel: null,
       selectedCardType: null
     };
   },
@@ -83,13 +87,14 @@ export default {
     selectAmount(item) {
       this.selectedCardType = null;
       this.selectedAmount = item.price;
+      this.selectedDepositLevel = item.slug;
     },
     selectCardType({ item, index }) {
       this.selectedAmount = null;
       this.selectedCardType = index;
     },
     async handleUserDeposit() {
-      const res = await api.userDeposit({ depositLevel: this.selectedAmount });
+      const res = await api.userDeposit({ depositLevel: this.selectedDepositLevel });
       const payArgs = res.data.payArgs;
       const result = await handlePayment(payArgs);
       await fetchUser();
